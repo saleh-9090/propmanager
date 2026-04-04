@@ -262,3 +262,50 @@ async def bulk_insert_units(units: list[dict]) -> None:
     async with httpx.AsyncClient() as c:
         r = await c.post(f"{_REST}/units", json=units, headers=_SVC)
         r.raise_for_status()
+
+
+# ── Customers ─────────────────────────────────────────────────────────────────
+
+async def get_customers(search: str | None, token: str) -> list[dict]:
+    """List customers for the caller's company. Optional full-text search across
+    full_name, id_number, and phone (case-insensitive OR match)."""
+    params: dict = {"select": "*", "order": "created_at.desc"}
+    if search:
+        term = search.strip()
+        params["or"] = (
+            f"(full_name.ilike.*{term}*,"
+            f"id_number.ilike.*{term}*,"
+            f"phone.ilike.*{term}*)"
+        )
+    async with httpx.AsyncClient() as c:
+        r = await c.get(f"{_REST}/customers", params=params, headers=_user_headers(token))
+        r.raise_for_status()
+        return r.json()
+
+
+async def create_customer(data: dict, token: str) -> dict:
+    async with httpx.AsyncClient() as c:
+        r = await c.post(f"{_REST}/customers", json=data, headers=_user_headers(token))
+        r.raise_for_status()
+        return r.json()[0]
+
+
+async def update_customer(customer_id: str, data: dict, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/customers",
+            params={"id": f"eq.{customer_id}"},
+            json=data,
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+async def delete_customer(customer_id: str, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.delete(
+            f"{_REST}/customers",
+            params={"id": f"eq.{customer_id}"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
