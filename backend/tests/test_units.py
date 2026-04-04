@@ -25,13 +25,29 @@ BUILDINGS_IN_PROJECT = [
 ]
 
 
-def test_list_units(client):
+def test_list_units_by_building(client):
     with patch("app.routers.units.supabase_client.get_units", new_callable=AsyncMock) as mock:
         mock.return_value = [MOCK_UNIT]
         response = client.get("/units", params={"building_id": "bldg-222"})
         assert response.status_code == 200
         assert len(response.json()) == 1
-        mock.assert_called_once_with("bldg-222", "test-token")
+        mock.assert_called_once_with("bldg-222", None, "test-token")
+
+
+def test_list_units_by_project(client):
+    with patch("app.routers.units.supabase_client.get_units", new_callable=AsyncMock) as mock:
+        mock.return_value = [MOCK_UNIT]
+        response = client.get("/units", params={"project_id": "proj-111"})
+        assert response.status_code == 200
+        mock.assert_called_once_with(None, "proj-111", "test-token")
+
+
+def test_list_units_all(client):
+    with patch("app.routers.units.supabase_client.get_units", new_callable=AsyncMock) as mock:
+        mock.return_value = [MOCK_UNIT]
+        response = client.get("/units")
+        assert response.status_code == 200
+        mock.assert_called_once_with(None, None, "test-token")
 
 
 def test_create_unit_as_owner(client):
