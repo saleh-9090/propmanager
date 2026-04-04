@@ -11,7 +11,8 @@ B2B sales management platform for Saudi real estate **developer companies** (bui
 - Day 2 complete: auth, company onboarding, user/role management
 - Day 3 complete: Project → Building → Unit management + CSV bulk import
 - Day 4 complete: Customer management (CRUD + search)
-- Day 5 next: Unit availability board
+- Day 5 complete: Unit availability board (read-only, client-side filtering)
+- Day 6 next: Reservation flow
 
 ## Stack
 - Backend: FastAPI (Python) — `http://localhost:8001`

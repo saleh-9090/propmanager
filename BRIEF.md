@@ -327,7 +327,7 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 - [x] Phase 1, Day 2 — Auth + company onboarding + user/role management
 - [x] Phase 1, Day 3 — Project → Building → Unit management + CSV bulk import
 - [x] Phase 1, Day 4 — Customer management
-- [ ] Phase 1, Day 5 — Unit availability board
+- [x] Phase 1, Day 5 — Unit availability board
 
 ---
 
@@ -491,6 +491,24 @@ Full project/building/unit CRUD with CSV bulk import. Split-view UI at `/project
 **Test count:** 46 total (38 Day 1-3 + 8 new)
 
 **Next:** Day 5 — Unit availability board.
+
+---
+
+### Day 5 — Unit Availability Board (2026-04-04)
+
+**What was built:**
+- Extended `GET /units` — `building_id` now optional, `project_id` added as optional filter, no params returns all company units (RLS scoped)
+- `frontend/src/app/units/page.tsx` — read-only card grid with cascading project/building dropdowns + status checkboxes; all filtering client-side
+- Cards show: unit number, floor, area, price, SAK ID, status badge
+
+**Key decisions:**
+- Filter by project/building client-side — all units loaded once on mount, no re-fetch on filter change
+- Building dropdown disabled until project is selected; resets when project changes
+- Summary counts reflect filtered results
+
+**Test count:** 48 total (46 Day 1-4 + 2 new)
+
+**Next:** Day 6 — Reservation flow.
 
 ---
 
