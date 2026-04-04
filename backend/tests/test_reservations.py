@@ -5,6 +5,7 @@ import pytest
 OWNER   = {"id": "user-abc", "company_id": "company-123", "role": "owner"}
 SALES   = {"id": "user-abc", "company_id": "company-123", "role": "sales_manager"}
 CFO     = {"id": "user-abc", "company_id": "company-123", "role": "cfo"}
+RES_MGR = {"id": "user-abc", "company_id": "company-123", "role": "reservation_manager"}
 
 MOCK_UNIT = {
     "id": "unit-111",
@@ -149,3 +150,53 @@ def test_cancel_reservation_rejects_cfo(client):
             "refund_amount": 0,
         })
         assert response.status_code == 403
+
+
+def test_return_deposit(client):
+    converted_reservation = {
+        "id": "res-111", "company_id": "company-123", "unit_id": "unit-111",
+        "customer_id": "cust-111", "status": "converted", "deposit_returned": False,
+        "deposit_amount": 10000, "payment_method": "bank_transfer",
+        "payment_date": "2026-04-01", "expires_at": "2026-04-15",
+        "receipt_file_url": None, "notes": None,
+        "units": {"unit_number": "A101", "building_id": "bldg-1", "price": 500000},
+        "customers": {"full_name": "محمد علي", "id_number": "1234567890"},
+    }
+    with patch("app.routers.reservations.supabase_client.get_user_profile", new_callable=AsyncMock) as mock_profile, \
+         patch("app.routers.reservations.supabase_client.get_reservation", new_callable=AsyncMock) as mock_get, \
+         patch("app.routers.reservations.supabase_client.record_deposit_return", new_callable=AsyncMock) as mock_return:
+        mock_profile.return_value = OWNER
+        mock_get.return_value = converted_reservation
+        mock_return.return_value = None
+        response = client.post("/reservations/res-111/return-deposit", json={
+            "deposit_return_method": "bank_transfer",
+            "deposit_return_date": "2026-04-05",
+        })
+        assert response.status_code == 200
+        mock_return.assert_called_once_with("res-111", {
+            "deposit_returned": True,
+            "deposit_return_method": "bank_transfer",
+            "deposit_return_date": "2026-04-05",
+        }, "test-token")
+
+
+def test_return_deposit_rejects_reservation_manager(client):
+    with patch("app.routers.reservations.supabase_client.get_user_profile", new_callable=AsyncMock) as mock_profile:
+        mock_profile.return_value = RES_MGR
+        response = client.post("/reservations/res-111/return-deposit", json={
+            "deposit_return_method": "cash",
+            "deposit_return_date": "2026-04-05",
+        })
+        assert response.status_code == 403
+
+
+def test_return_deposit_not_converted(client):
+    with patch("app.routers.reservations.supabase_client.get_user_profile", new_callable=AsyncMock) as mock_profile, \
+         patch("app.routers.reservations.supabase_client.get_reservation", new_callable=AsyncMock) as mock_get:
+        mock_profile.return_value = OWNER
+        mock_get.return_value = MOCK_RESERVATION  # status is "active", not "converted"
+        response = client.post("/reservations/res-111/return-deposit", json={
+            "deposit_return_method": "cash",
+            "deposit_return_date": "2026-04-05",
+        })
+        assert response.status_code == 404

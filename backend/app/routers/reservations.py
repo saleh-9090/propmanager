@@ -97,3 +97,28 @@ async def cancel_reservation(reservation_id: str, body: CancelBody, user=Depends
     await supabase_client.update_unit_status(reservation["unit_id"], "available", user["token"])
 
     return {"ok": True}
+
+
+SALE_WRITERS = {"owner", "sales_manager"}
+
+
+class ReturnDepositBody(BaseModel):
+    deposit_return_method: str
+    deposit_return_date: str
+    deposit_return_reference: str | None = None
+
+
+@router.post("/{reservation_id}/return-deposit")
+async def return_deposit(reservation_id: str, body: ReturnDepositBody, user=Depends(get_current_user)):
+    caller = await supabase_client.get_user_profile(user["user_id"], user["token"])
+    if not caller or caller["role"] not in SALE_WRITERS:
+        raise HTTPException(status_code=403, detail="ليس لديك صلاحية تسجيل استرداد العربون")
+
+    reservation = await supabase_client.get_reservation(reservation_id, user["token"])
+    if not reservation or reservation["status"] != "converted":
+        raise HTTPException(status_code=404, detail="الحجز غير موجود أو لم يتم تحويله")
+
+    data = body.model_dump(exclude_none=True)
+    data["deposit_returned"] = True
+    await supabase_client.record_deposit_return(reservation_id, data, user["token"])
+    return {"ok": True}
