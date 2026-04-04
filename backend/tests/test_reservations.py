@@ -112,6 +112,13 @@ def test_patch_reservation(client):
         mock_update.assert_called_once_with("res-111", {"deposit_amount": 15000}, "test-token")
 
 
+def test_patch_reservation_rejects_cfo(client):
+    with patch("app.routers.reservations.supabase_client.get_user_profile", new_callable=AsyncMock) as mock_profile:
+        mock_profile.return_value = CFO
+        response = client.patch("/reservations/res-111", json={"deposit_amount": 15000})
+        assert response.status_code == 403
+
+
 def test_cancel_reservation(client):
     with patch("app.routers.reservations.supabase_client.get_user_profile", new_callable=AsyncMock) as mock_profile, \
          patch("app.routers.reservations.supabase_client.get_reservation", new_callable=AsyncMock) as mock_get, \

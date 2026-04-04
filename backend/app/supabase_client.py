@@ -315,7 +315,9 @@ async def delete_customer(customer_id: str, token: str) -> None:
 # ── Reservations ──────────────────────────────────────────────────────────────
 
 async def get_reservations(token: str) -> list[dict]:
-    """Active reservations (both current and expired) ordered by expires_at asc."""
+    """Reservations with status='active', ordered by expires_at asc.
+    In this domain, 'expired' means expires_at < today but status is still 'active' —
+    expiry is computed client-side. The filter is status=eq.active only."""
     async with httpx.AsyncClient() as c:
         r = await c.get(
             f"{_REST}/reservations",
