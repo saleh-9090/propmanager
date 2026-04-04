@@ -315,15 +315,15 @@ async def delete_customer(customer_id: str, token: str) -> None:
 # ── Reservations ──────────────────────────────────────────────────────────────
 
 async def get_reservations(token: str) -> list[dict]:
-    """Reservations with status='active', ordered by expires_at asc.
+    """Reservations with status active or converted, ordered by expires_at asc.
     In this domain, 'expired' means expires_at < today but status is still 'active' —
-    expiry is computed client-side. The filter is status=eq.active only."""
+    expiry is computed client-side. Cancelled reservations are excluded."""
     async with httpx.AsyncClient() as c:
         r = await c.get(
             f"{_REST}/reservations",
             params={
                 "select": "*,units(unit_number,building_id,price),customers(full_name,id_number)",
-                "status": "eq.active",
+                "status": "in.(active,converted)",
                 "order": "expires_at.asc",
             },
             headers=_user_headers(token),
@@ -402,6 +402,54 @@ async def update_unit_status(unit_id: str, status: str, token: str) -> None:
             f"{_REST}/units",
             params={"id": f"eq.{unit_id}"},
             json={"status": status},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+# ── Sales ─────────────────────────────────────────────────────────────────────
+
+async def get_sales(token: str) -> list[dict]:
+    """All completed sales ordered by created_at desc."""
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/sales",
+            params={
+                "select": "*,units(unit_number,building_id),customers(full_name,id_number)",
+                "order": "created_at.desc",
+            },
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        return r.json()
+
+
+async def create_sale(data: dict, token: str) -> dict:
+    async with httpx.AsyncClient() as c:
+        r = await c.post(f"{_REST}/sales", json=data, headers=_user_headers(token))
+        r.raise_for_status()
+        return r.json()[0]
+
+
+async def update_reservation_status(reservation_id: str, status: str, token: str) -> None:
+    """Update reservation status field only — used when converting to sale."""
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/reservations",
+            params={"id": f"eq.{reservation_id}"},
+            json={"status": status},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+async def record_deposit_return(reservation_id: str, data: dict, token: str) -> None:
+    """Record deposit return details on a converted reservation."""
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/reservations",
+            params={"id": f"eq.{reservation_id}"},
+            json=data,
             headers=_user_headers(token),
         )
         r.raise_for_status()
