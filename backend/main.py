@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routers import onboarding, users, projects, buildings
+from app.routers import onboarding, users, projects, buildings, units
 
 app = FastAPI(
     title="PropManager API",
@@ -21,6 +21,7 @@ app.include_router(onboarding.router)
 app.include_router(users.router)
 app.include_router(projects.router)
 app.include_router(buildings.router)
+app.include_router(units.router)
 
 
 @app.get("/health")
