@@ -3,6 +3,7 @@
 
 import { useCallback, useEffect, useState } from 'react'
 import { apiDelete, apiGet } from '@/lib/api'
+import { getUserProfile } from '@/lib/supabase'
 import CustomerFormModal from './_components/CustomerFormModal'
 
 type Customer = {
@@ -45,6 +46,13 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [modal, setModal] = useState<{ open: boolean; customer?: Customer }>({ open: false })
+  const [isOwner, setIsOwner] = useState(false)
+
+  useEffect(() => {
+    getUserProfile().then(profile => {
+      setIsOwner(profile?.role === 'owner')
+    })
+  }, [])
 
   const loadCustomers = useCallback(async (searchTerm: string) => {
     setLoading(true)
@@ -136,11 +144,13 @@ export default function CustomersPage() {
                       className="text-stone-400 hover:text-stone-700 ml-2 text-xs"
                       title="تعديل"
                     >✎</button>
-                    <button
-                      onClick={() => handleDelete(c.id, c.full_name)}
-                      className="text-red-400 hover:text-red-600 text-xs"
-                      title="حذف"
-                    >×</button>
+                    {isOwner && (
+                      <button
+                        onClick={() => handleDelete(c.id, c.full_name)}
+                        className="text-red-400 hover:text-red-600 text-xs"
+                        title="حذف"
+                      >×</button>
+                    )}
                   </td>
                 </tr>
               ))}
