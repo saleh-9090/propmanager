@@ -26,6 +26,8 @@ async def onboard(body: OnboardingRequest, user=Depends(get_current_user)):
         "name_ar": body.company_name_ar,
         "rega_license": body.rega_license,
     })
+    if not company or "id" not in company:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Failed to create company")
 
     await supabase_client.insert_user_profile({
         "id": user["user_id"],

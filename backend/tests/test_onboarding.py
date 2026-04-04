@@ -49,3 +49,8 @@ def test_onboarding_rejects_existing_profile(client):
 def test_onboarding_requires_company_name(client):
     response = client.post("/onboarding", json={"full_name": "محمد العلي"})
     assert response.status_code == 422
+
+
+def test_onboarding_requires_full_name(client):
+    response = client.post("/onboarding", json={"company_name": "Test Co"})
+    assert response.status_code == 422
