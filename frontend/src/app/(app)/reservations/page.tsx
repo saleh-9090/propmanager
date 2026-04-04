@@ -2,16 +2,20 @@
 
 import { Suspense, useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
+import Link from 'next/link'
 import { apiGet } from '@/lib/api'
 import { getUserProfile } from '@/lib/supabase'
 import ReservationForm from './_components/ReservationForm'
 import CancelModal from './_components/CancelModal'
+import ReturnDepositModal from './_components/ReturnDepositModal'
 
 type Reservation = {
   id: string
   unit_id: string
   customer_id: string
+  status: 'active' | 'converted' | 'cancelled'
   deposit_amount: number
+  deposit_returned: boolean
   payment_method: string
   payment_reference: string | null
   payment_date: string
@@ -32,6 +36,24 @@ function isExpired(expiresAt: string) {
   return new Date(expiresAt) < new Date(new Date().toDateString())
 }
 
+function StatusBadge({ reservation }: { reservation: Reservation }) {
+  if (reservation.status === 'converted') {
+    return (
+      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-600">
+        محوّلة
+      </span>
+    )
+  }
+  const expired = isExpired(reservation.expires_at)
+  return (
+    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
+      expired ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+    }`}>
+      {expired ? 'منتهية' : 'نشطة'}
+    </span>
+  )
+}
+
 function ReservationsContent() {
   const searchParams = useSearchParams()
   const prefillUnitId = searchParams.get('unit_id') ?? undefined
@@ -41,6 +63,7 @@ function ReservationsContent() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [canWrite, setCanWrite] = useState(false)
+  const [canSale, setCanSale] = useState(false)
 
   const [form, setForm] = useState<{
     open: boolean
@@ -50,11 +73,13 @@ function ReservationsContent() {
   }>({ open: false })
 
   const [cancelTarget, setCancelTarget] = useState<string | null>(null)
+  const [returnDepositTarget, setReturnDepositTarget] = useState<string | null>(null)
 
   useEffect(() => {
     getUserProfile().then(profile => {
       const role = (profile as { role?: string } | null)?.role
       setCanWrite(['owner', 'sales_manager', 'reservation_manager'].includes(role ?? ''))
+      setCanSale(['owner', 'sales_manager'].includes(role ?? ''))
     })
   }, [])
 
@@ -75,7 +100,6 @@ function ReservationsContent() {
     loadReservations()
   }, [loadReservations])
 
-  // Auto-open form if URL has pre-fill params
   useEffect(() => {
     if (prefillUnitId || prefillCustomerId) {
       setForm({ open: true, prefillUnitId, prefillCustomerId })
@@ -89,6 +113,11 @@ function ReservationsContent() {
 
   function handleCancelled() {
     setCancelTarget(null)
+    loadReservations()
+  }
+
+  function handleDepositReturned() {
+    setReturnDepositTarget(null)
     loadReservations()
   }
 
@@ -112,7 +141,7 @@ function ReservationsContent() {
         ) : error ? (
           <p className="text-red-600 text-sm">{error}</p>
         ) : reservations.length === 0 ? (
-          <p className="text-stone-400 text-sm text-center py-12">لا توجد حجوزات نشطة</p>
+          <p className="text-stone-400 text-sm text-center py-12">لا توجد حجوزات</p>
         ) : (
           <table className="w-full text-sm">
             <thead>
@@ -128,44 +157,52 @@ function ReservationsContent() {
               </tr>
             </thead>
             <tbody className="divide-y divide-stone-100">
-              {reservations.map(r => {
-                const expired = isExpired(r.expires_at)
-                return (
-                  <tr key={r.id}>
-                    <td className="py-3 font-medium">{r.units.unit_number}</td>
-                    <td className="py-3">{r.customers.full_name}</td>
-                    <td className="py-3">{r.deposit_amount.toLocaleString('ar-SA')} ر.س</td>
-                    <td className="py-3">{PAYMENT_METHOD_LABELS[r.payment_method] ?? r.payment_method}</td>
-                    <td className="py-3">{r.payment_date}</td>
-                    <td className="py-3">{r.expires_at}</td>
-                    <td className="py-3">
-                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                        expired
-                          ? 'bg-red-100 text-red-700'
-                          : 'bg-green-100 text-green-700'
-                      }`}>
-                        {expired ? 'منتهية' : 'نشطة'}
-                      </span>
-                    </td>
-                    <td className="py-3 text-left">
-                      {canWrite && (
-                        <>
-                          <button
-                            onClick={() => setForm({ open: true, reservation: r })}
-                            className="text-stone-400 hover:text-stone-700 ml-2 text-xs"
-                            title="تعديل"
-                          >✎</button>
-                          <button
-                            onClick={() => setCancelTarget(r.id)}
-                            className="text-red-400 hover:text-red-600 text-xs"
-                            title="إلغاء"
-                          >✕</button>
-                        </>
-                      )}
-                    </td>
-                  </tr>
-                )
-              })}
+              {reservations.map(r => (
+                <tr key={r.id}>
+                  <td className="py-3 font-medium">{r.units.unit_number}</td>
+                  <td className="py-3">{r.customers.full_name}</td>
+                  <td className="py-3">{r.deposit_amount.toLocaleString('ar-SA')} ر.س</td>
+                  <td className="py-3">{PAYMENT_METHOD_LABELS[r.payment_method] ?? r.payment_method}</td>
+                  <td className="py-3">{r.payment_date}</td>
+                  <td className="py-3">{r.expires_at}</td>
+                  <td className="py-3"><StatusBadge reservation={r} /></td>
+                  <td className="py-3 text-left space-x-2 space-x-reverse">
+                    {r.status === 'active' && canWrite && (
+                      <>
+                        <button
+                          onClick={() => setForm({ open: true, reservation: r })}
+                          className="text-stone-400 hover:text-stone-700 text-xs"
+                          title="تعديل"
+                        >✎</button>
+                        <button
+                          onClick={() => setCancelTarget(r.id)}
+                          className="text-red-400 hover:text-red-600 text-xs"
+                          title="إلغاء"
+                        >✕</button>
+                      </>
+                    )}
+                    {r.status === 'active' && canSale && (
+                      <Link
+                        href={`/sales?reservation_id=${r.id}`}
+                        className="text-primary-600 hover:text-primary-800 text-xs font-medium"
+                      >
+                        تحويل
+                      </Link>
+                    )}
+                    {r.status === 'converted' && canSale && !r.deposit_returned && (
+                      <button
+                        onClick={() => setReturnDepositTarget(r.id)}
+                        className="text-amber-600 hover:text-amber-800 text-xs font-medium"
+                      >
+                        سداد العربون
+                      </button>
+                    )}
+                    {r.status === 'converted' && r.deposit_returned && (
+                      <span className="text-green-600 text-xs">✓ عربون مُسترد</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         )}
@@ -186,6 +223,14 @@ function ReservationsContent() {
           reservationId={cancelTarget}
           onClose={() => setCancelTarget(null)}
           onCancelled={handleCancelled}
+        />
+      )}
+
+      {returnDepositTarget && (
+        <ReturnDepositModal
+          reservationId={returnDepositTarget}
+          onClose={() => setReturnDepositTarget(null)}
+          onReturned={handleDepositReturned}
         />
       )}
     </div>
