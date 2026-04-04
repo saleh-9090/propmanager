@@ -7,14 +7,10 @@ Read `D:/claude/propmanager/preferences.md` for work style preferences.
 B2B sales management platform for Saudi real estate **developer companies** (build + sell ready units). Unit inventory, reservations with deposit tracking, sales, commission splits, PDF contract generation, Telegram bot for owner.
 
 ## Current status
-- Day 1 complete: scaffold + Supabase schema written
-- ⚠️ Schema NOT yet run in Supabase — do this before Day 2
-- Day 2 next: Auth + company onboarding + user/role management
-
-## Before starting Day 2
-1. Run `docs/cleanup.sql` in Supabase SQL Editor (drops proptech tables)
-2. Run `docs/supabase-schema.sql` in Supabase SQL Editor (creates all tables + RLS)
-3. Get JWT secret: Supabase Dashboard → Settings → API → JWT Secret → paste into `backend/.env` as `SUPABASE_JWT_SECRET`
+- Day 1 complete: scaffold + Supabase schema
+- Day 2 complete: auth, company onboarding, user/role management
+- Day 3 complete: Project → Building → Unit management + CSV bulk import
+- Day 4 next: Customer management
 
 ## Stack
 - Backend: FastAPI (Python) — `http://localhost:8001`

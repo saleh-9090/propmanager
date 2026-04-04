@@ -323,8 +323,9 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 
 - [x] Phase 0 — Validation (skipped — 4 years domain experience, pain points confirmed)
 - [x] Phase 1, Day 1 — Project scaffold + Supabase schema
-- [ ] Phase 1, Day 2 — Auth + company onboarding + user/role management
-- [ ] Phase 1, Day 3 — Project → Building → Unit management + CSV bulk import
+- [x] Schema deployed to Supabase (2026-04-04) — cleanup.sql + supabase-schema.sql run successfully
+- [x] Phase 1, Day 2 — Auth + company onboarding + user/role management
+- [x] Phase 1, Day 3 — Project → Building → Unit management + CSV bulk import
 - [ ] Phase 1, Day 4 — Customer management
 - [ ] Phase 1, Day 5 — Unit availability board
 
@@ -406,7 +407,69 @@ Full project scaffold and Supabase schema. Nothing runs yet — this is the foun
 **⚠️ One thing needed from Supabase Dashboard:**
 - Go to Settings → API → JWT Secret → copy into `backend/.env` as `SUPABASE_JWT_SECRET`
 
-**Next:** Run cleanup.sql then supabase-schema.sql in Supabase SQL Editor, then Day 2 — auth + company onboarding.
+**Next:** Day 3 — Project → Building → Unit management + CSV bulk import.
+
+---
+
+### Day 2 — Auth + Onboarding + User Management (2026-04-04)
+
+**What was built:**
+
+Full auth flow, company onboarding, and user/role management.
+
+**Files created/modified:**
+| File | Purpose |
+|---|---|
+| `backend/app/supabase_client.py` | httpx-based Supabase REST client — auth/user operations |
+| `backend/app/routers/onboarding.py` | POST /onboarding — create company + owner profile |
+| `backend/app/routers/users.py` | GET/POST/PATCH/DELETE /users — invite, role change, delete |
+| `frontend/src/app/auth/page.tsx` | Arabic login/signup toggle |
+| `frontend/src/app/onboarding/page.tsx` | 5-field company setup form |
+| `frontend/src/app/dashboard/layout.tsx` | Sidebar layout with nav, company name, role |
+| `frontend/src/app/settings/users/page.tsx` | Invite form + users table with role dropdown |
+| `frontend/src/middleware.ts` | Route protection + post-login profile check |
+
+**Next:** Day 3 — Project → Building → Unit management + CSV bulk import.
+
+---
+
+### Day 3 — Inventory Management (2026-04-04)
+
+**What was built:**
+
+Full project/building/unit CRUD with CSV bulk import. Split-view UI at `/projects`.
+
+**Backend:**
+| File | Purpose |
+|---|---|
+| `backend/app/routers/projects.py` | GET/POST/PATCH/DELETE /projects |
+| `backend/app/routers/buildings.py` | POST/PATCH/DELETE /buildings |
+| `backend/app/routers/units.py` | GET/POST/PATCH/DELETE /units + POST /units/import |
+| `backend/app/supabase_client.py` | +14 functions for projects/buildings/units/import |
+| `backend/tests/test_projects.py` | 7 tests |
+| `backend/tests/test_buildings.py` | 6 tests |
+| `backend/tests/test_units.py` | 12 tests (including all CSV import cases) |
+
+**Frontend:**
+| File | Purpose |
+|---|---|
+| `frontend/src/app/projects/page.tsx` | Split-view shell (aside + main) |
+| `frontend/src/app/projects/_components/ProjectTree.tsx` | Accordion tree, URL-driven building selection |
+| `frontend/src/app/projects/_components/ProjectFormModal.tsx` | Add/edit project |
+| `frontend/src/app/projects/_components/BuildingFormModal.tsx` | Add/edit building |
+| `frontend/src/app/projects/_components/UnitsPanel.tsx` | Units table with status badges |
+| `frontend/src/app/projects/_components/UnitFormModal.tsx` | Add/edit unit |
+| `frontend/src/app/projects/_components/CsvImportModal.tsx` | File picker → preview → multipart import |
+
+**Key decisions:**
+- CSV import is all-or-nothing: entire file validated before any insert
+- SAK ID uniqueness is global (across all companies) — service role check
+- `/units/import` defined before `/{unit_id}` to avoid FastAPI path collision
+- URL pattern: `/projects?building=<id>&project=<id>`
+
+**Test count:** 38 total (13 Day 1-2 + 25 new)
+
+**Next:** Day 4 — Customer management.
 
 ---
 
