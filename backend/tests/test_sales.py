@@ -137,3 +137,19 @@ def test_create_sale_conversion_invalid_reservation(client):
             "payment_date": "2026-04-01",
         })
         assert response.status_code == 409
+
+
+def test_create_sale_conversion_unit_mismatch(client):
+    with patch("app.routers.sales.supabase_client.get_user_profile", new_callable=AsyncMock) as mock_profile, \
+         patch("app.routers.sales.supabase_client.get_reservation", new_callable=AsyncMock) as mock_res:
+        mock_profile.return_value = OWNER
+        mock_res.return_value = MOCK_RESERVATION_ACTIVE  # unit_id = "unit-111"
+        response = client.post("/sales", json={
+            "unit_id": "unit-999",  # wrong unit
+            "customer_id": "cust-111",
+            "reservation_id": "res-111",
+            "payment_amount": 500000,
+            "payment_method": "cash",
+            "payment_date": "2026-04-01",
+        })
+        assert response.status_code == 422

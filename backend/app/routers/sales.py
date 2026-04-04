@@ -40,6 +40,8 @@ async def create_sale(body: SaleCreate, user=Depends(get_current_user)):
         reservation = await supabase_client.get_reservation(body.reservation_id, user["token"])
         if not reservation or reservation["status"] != "active":
             raise HTTPException(status_code=409, detail="الحجز غير صالح للتحويل")
+        if reservation["unit_id"] != body.unit_id:
+            raise HTTPException(status_code=422, detail="unit_id لا يطابق الحجز")
     else:
         # Direct sale mode: verify unit is available
         unit = await supabase_client.get_unit(body.unit_id, user["token"])
