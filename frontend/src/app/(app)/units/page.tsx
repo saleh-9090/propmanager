@@ -2,6 +2,7 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import Link from 'next/link'
 import { apiGet } from '@/lib/api'
 
 type Unit = {
@@ -176,6 +177,14 @@ export default function UnitsPage() {
                 <div>{u.price.toLocaleString('ar-SA')} ر.س</div>
               </div>
               <div className="mt-2 font-mono text-xs text-stone-400 truncate">{u.sak_id}</div>
+              {u.status === 'available' && (
+                <Link
+                  href={`/reservations?unit_id=${u.id}`}
+                  className="mt-3 block text-center btn-primary text-xs py-1"
+                >
+                  احجز
+                </Link>
+              )}
             </div>
           ))}
         </div>

@@ -2,6 +2,7 @@
 'use client'
 
 import { useCallback, useEffect, useRef, useState } from 'react'
+import Link from 'next/link'
 import { apiDelete, apiGet } from '@/lib/api'
 import { getUserProfile } from '@/lib/supabase'
 import CustomerFormModal from './_components/CustomerFormModal'
@@ -148,6 +149,12 @@ export default function CustomersPage() {
                   <td className="py-3">{c.phone}</td>
                   <td className="py-3 text-stone-500">{LEAD_SOURCE_LABELS[c.lead_source] ?? c.lead_source}</td>
                   <td className="py-3 text-left">
+                    <Link
+                      href={`/reservations?customer_id=${c.id}`}
+                      className="btn-ghost text-xs ml-2"
+                    >
+                      احجز
+                    </Link>
                     {canWrite && (
                       <button
                         onClick={() => setModal({ open: true, customer: c })}
