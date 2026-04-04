@@ -310,3 +310,96 @@ async def delete_customer(customer_id: str, token: str) -> None:
             headers=_user_headers(token),
         )
         r.raise_for_status()
+
+
+# ── Reservations ──────────────────────────────────────────────────────────────
+
+async def get_reservations(token: str) -> list[dict]:
+    """Active reservations (both current and expired) ordered by expires_at asc."""
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/reservations",
+            params={
+                "select": "*,units(unit_number,building_id,price),customers(full_name,id_number)",
+                "status": "eq.active",
+                "order": "expires_at.asc",
+            },
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        return r.json()
+
+
+async def get_reservation(reservation_id: str, token: str) -> dict | None:
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/reservations",
+            params={"id": f"eq.{reservation_id}", "select": "*"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        return rows[0] if rows else None
+
+
+async def create_reservation(data: dict, token: str) -> dict:
+    async with httpx.AsyncClient() as c:
+        r = await c.post(f"{_REST}/reservations", json=data, headers=_user_headers(token))
+        r.raise_for_status()
+        return r.json()[0]
+
+
+async def delete_reservation(reservation_id: str, token: str) -> None:
+    """Used for rollback only — if unit status update fails after reservation insert."""
+    async with httpx.AsyncClient() as c:
+        r = await c.delete(
+            f"{_REST}/reservations",
+            params={"id": f"eq.{reservation_id}"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+async def update_reservation(reservation_id: str, data: dict, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/reservations",
+            params={"id": f"eq.{reservation_id}"},
+            json=data,
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+async def cancel_reservation(reservation_id: str, data: dict, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/reservations",
+            params={"id": f"eq.{reservation_id}"},
+            json=data,
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+async def get_unit(unit_id: str, token: str) -> dict | None:
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/units",
+            params={"id": f"eq.{unit_id}", "select": "*"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        return rows[0] if rows else None
+
+
+async def update_unit_status(unit_id: str, status: str, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/units",
+            params={"id": f"eq.{unit_id}"},
+            json={"status": status},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
