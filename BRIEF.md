@@ -326,7 +326,7 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 - [x] Schema deployed to Supabase (2026-04-04) — cleanup.sql + supabase-schema.sql run successfully
 - [x] Phase 1, Day 2 — Auth + company onboarding + user/role management
 - [x] Phase 1, Day 3 — Project → Building → Unit management + CSV bulk import
-- [ ] Phase 1, Day 4 — Customer management
+- [x] Phase 1, Day 4 — Customer management
 - [ ] Phase 1, Day 5 — Unit availability board
 
 ---
@@ -470,6 +470,27 @@ Full project/building/unit CRUD with CSV bulk import. Split-view UI at `/project
 **Test count:** 38 total (13 Day 1-2 + 25 new)
 
 **Next:** Day 4 — Customer management.
+
+---
+
+### Day 4 — Customer Management (2026-04-04)
+
+**What was built:**
+- `GET /customers` with optional `?search=` (ilike OR across full_name, id_number, phone)
+- `POST /customers`, `PATCH /customers/{id}`, `DELETE /customers/{id}` with role guards
+- Supabase client: `get_customers`, `create_customer`, `update_customer`, `delete_customer`
+- Frontend `/customers` page: searchable table, debounced 300ms, two empty states
+- `CustomerFormModal` with 8 fields (full_name, id_type, id_number, phone, email, birthdate, lead_source, notes)
+- Role gating: create/edit hidden for cfo/accountant; delete hidden for non-owners
+
+**Key decisions:**
+- Search uses PostgREST `or` + `ilike` with `*` wildcards (URL-friendly vs `%`)
+- WRITERS = `{owner, sales_manager, reservation_manager}`; DELETE = owner only
+- `getUserProfile()` called client-side to gate UI buttons; backend enforces authoritatively
+
+**Test count:** 46 total (38 Day 1-3 + 8 new)
+
+**Next:** Day 5 — Unit availability board.
 
 ---
 

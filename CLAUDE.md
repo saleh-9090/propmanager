@@ -10,7 +10,8 @@ B2B sales management platform for Saudi real estate **developer companies** (bui
 - Day 1 complete: scaffold + Supabase schema
 - Day 2 complete: auth, company onboarding, user/role management
 - Day 3 complete: Project → Building → Unit management + CSV bulk import
-- Day 4 next: Customer management
+- Day 4 complete: Customer management (CRUD + search)
+- Day 5 next: Unit availability board
 
 ## Stack
 - Backend: FastAPI (Python) — `http://localhost:8001`
