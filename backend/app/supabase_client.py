@@ -185,17 +185,18 @@ async def delete_building(building_id: str, token: str) -> None:
 
 # ── Units ─────────────────────────────────────────────────────────────────────
 
-async def get_units(building_id: str, token: str) -> list[dict]:
+async def get_units(building_id: str | None, project_id: str | None, token: str) -> list[dict]:
+    params: dict = {
+        "select": "*",
+        "order": "project_id.asc,building_id.asc,floor.asc,unit_number.asc",
+    }
+    if building_id:
+        params["building_id"] = f"eq.{building_id}"
+    elif project_id:
+        params["project_id"] = f"eq.{project_id}"
+    # else: no filter — RLS returns all units for the caller's company
     async with httpx.AsyncClient() as c:
-        r = await c.get(
-            f"{_REST}/units",
-            params={
-                "building_id": f"eq.{building_id}",
-                "select": "*",
-                "order": "floor.asc,unit_number.asc",
-            },
-            headers=_user_headers(token),
-        )
+        r = await c.get(f"{_REST}/units", params=params, headers=_user_headers(token))
         r.raise_for_status()
         return r.json()
 

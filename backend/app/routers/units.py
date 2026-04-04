@@ -37,8 +37,12 @@ class UnitUpdate(BaseModel):
 
 
 @router.get("")
-async def list_units(building_id: str, user=Depends(get_current_user)):
-    return await supabase_client.get_units(building_id, user["token"])
+async def list_units(
+    building_id: str | None = None,
+    project_id: str | None = None,
+    user=Depends(get_current_user),
+):
+    return await supabase_client.get_units(building_id, project_id, user["token"])
 
 
 @router.post("", status_code=201)
