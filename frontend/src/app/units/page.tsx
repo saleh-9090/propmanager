@@ -97,7 +97,7 @@ export default function UnitsPage() {
   }
 
   return (
-    <div>
+    <div className="max-w-6xl">
       <h1 className="text-2xl font-bold text-stone-900 mb-6">لوحة الوحدات</h1>
 
       {/* Filter bar */}
