@@ -77,7 +77,7 @@ async def invite_auth_user(email: str) -> dict:
     """Calls Supabase invite endpoint — creates auth user + sends invite email."""
     async with httpx.AsyncClient() as c:
         r = await c.post(
-            f"{_AUTH}/invite",
+            f"{_AUTH_ADMIN}/invite",
             json={"email": email},
             headers=_SVC,
         )
@@ -94,6 +94,8 @@ async def update_user_role(user_id: str, role: str) -> None:
             headers=_SVC,
         )
         r.raise_for_status()
+        if not r.json():
+            raise ValueError(f"User {user_id} not found")
 
 
 async def delete_auth_user(user_id: str) -> None:
