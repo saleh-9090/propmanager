@@ -166,7 +166,7 @@ function ReservationsContent() {
                   <td className="py-3">{r.payment_date}</td>
                   <td className="py-3">{r.expires_at}</td>
                   <td className="py-3"><StatusBadge reservation={r} /></td>
-                  <td className="py-3 text-left space-x-2 space-x-reverse">
+                  <td className="py-3 text-left flex items-center space-x-2 space-x-reverse">
                     {r.status === 'active' && canWrite && (
                       <>
                         <button
