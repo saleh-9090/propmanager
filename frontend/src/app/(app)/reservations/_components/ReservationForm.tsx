@@ -74,6 +74,9 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
   const [error, setError] = useState('')
   const [uploading, setUploading] = useState(false)
 
+  const [prefillUnitLabel, setPrefillUnitLabel] = useState<string>('')
+  const [prefillCustomerLabel, setPrefillCustomerLabel] = useState<string>('')
+
   const unitLocked = !!prefillUnitId || isEdit
   const customerLocked = !!prefillCustomerId || isEdit
 
@@ -91,6 +94,24 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
       apiGet<Customer[]>(url).then(setCustomers).catch(() => {})
     }
   }, [customerSearch, customerLocked])
+
+  useEffect(() => {
+    if (prefillUnitId && !isEdit) {
+      apiGet<{ id: string; unit_number: string; price: number }[]>(`/units`).then(units => {
+        const u = units.find(u => u.id === prefillUnitId)
+        if (u) setPrefillUnitLabel(`${u.unit_number} — ${u.price.toLocaleString('ar-SA')} ر.س`)
+      }).catch(() => setPrefillUnitLabel(prefillUnitId))
+    }
+  }, [prefillUnitId, isEdit])
+
+  useEffect(() => {
+    if (prefillCustomerId && !isEdit) {
+      apiGet<{ id: string; full_name: string; id_number: string }[]>('/customers').then(customers => {
+        const c = customers.find(c => c.id === prefillCustomerId)
+        if (c) setPrefillCustomerLabel(`${c.full_name} — ${c.id_number}`)
+      }).catch(() => setPrefillCustomerLabel(prefillCustomerId))
+    }
+  }, [prefillCustomerId, isEdit])
 
   const filteredUnits = units.filter(u =>
     u.status === 'available' &&
@@ -163,7 +184,7 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-1">الوحدة</label>
               <p className="input bg-stone-50 text-stone-600">
-                {reservation?.units.unit_number ?? prefillUnitId}
+                {reservation?.units.unit_number ?? (prefillUnitLabel || prefillUnitId)}
               </p>
             </div>
           ) : (
@@ -196,7 +217,7 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
             <div>
               <label className="block text-sm font-medium text-stone-700 mb-1">العميل</label>
               <p className="input bg-stone-50 text-stone-600">
-                {reservation?.customers.full_name ?? prefillCustomerId}
+                {reservation?.customers.full_name ?? (prefillCustomerLabel || prefillCustomerId)}
               </p>
             </div>
           ) : (
