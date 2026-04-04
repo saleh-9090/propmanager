@@ -36,7 +36,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
 
   if (!profile) redirect('/onboarding')
 
-  const companyName = (profile.companies as { name_ar: string } | null)?.name_ar ?? ''
+  const companyName = (profile.companies as unknown as { name_ar: string } | null)?.name_ar ?? ''
 
   return (
     <div className="flex min-h-screen">
