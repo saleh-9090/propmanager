@@ -20,3 +20,6 @@ data/uploads/
 # OS
 .DS_Store
 Thumbs.db
+
+# Worktrees
+.worktrees/
