@@ -1,7 +1,7 @@
 // frontend/src/app/customers/page.tsx
 'use client'
 
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { apiDelete, apiGet } from '@/lib/api'
 import { getUserProfile } from '@/lib/supabase'
 import CustomerFormModal from './_components/CustomerFormModal'
@@ -50,9 +50,11 @@ export default function CustomersPage() {
 
   useEffect(() => {
     getUserProfile().then(profile => {
-      setIsOwner(profile?.role === 'owner')
+      setIsOwner((profile as { role?: string } | null)?.role === 'owner')
     })
   }, [])
+
+  const isFirstRender = useRef(true)
 
   const loadCustomers = useCallback(async (searchTerm: string) => {
     setLoading(true)
@@ -68,11 +70,13 @@ export default function CustomersPage() {
     }
   }, [])
 
-  // Initial load
-  useEffect(() => { loadCustomers('') }, [loadCustomers])
-
-  // Debounced search
+  // Initial load is instant; subsequent search changes are debounced 300ms
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      loadCustomers(search)
+      return
+    }
     const t = setTimeout(() => loadCustomers(search), 300)
     return () => clearTimeout(t)
   }, [search, loadCustomers])
