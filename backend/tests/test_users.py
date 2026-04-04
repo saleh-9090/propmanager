@@ -99,9 +99,26 @@ def test_delete_user_as_owner(client):
 
 
 def test_delete_user_cannot_delete_self(client):
+    response = client.delete("/users/user-abc")  # user-abc == MOCK_USER["user_id"]
+    assert response.status_code == 400
+
+
+def test_update_role_rejects_non_owner(client):
     with patch("app.routers.users.supabase_client.get_user_profile", new_callable=AsyncMock) as mock_get:
+        mock_get.return_value = STAFF_PROFILE
+
+        response = client.patch("/users/user-def/role", json={"role": "accountant"})
+
+        assert response.status_code == 403
+
+
+def test_delete_user_target_not_found(client):
+    with patch("app.routers.users.supabase_client.get_user_profile", new_callable=AsyncMock) as mock_get, \
+         patch("app.routers.users.supabase_client.get_user_profile_in_company", new_callable=AsyncMock) as mock_target:
+
         mock_get.return_value = OWNER_PROFILE
+        mock_target.return_value = None
 
-        response = client.delete("/users/user-abc")  # same as MOCK_USER["user_id"]
+        response = client.delete("/users/user-unknown")
 
-        assert response.status_code == 400
+        assert response.status_code == 404
