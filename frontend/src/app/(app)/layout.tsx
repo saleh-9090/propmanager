@@ -1,22 +1,10 @@
-// frontend/src/app/dashboard/layout.tsx
 import { redirect } from 'next/navigation'
 import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
-import Link from 'next/link'
+import NavLinks from './_components/NavLinks'
 import SignOutButton from './_components/SignOutButton'
 
-const NAV = [
-  { href: '/dashboard',       label: 'الرئيسية' },
-  { href: '/projects',        label: 'المشاريع' },
-  { href: '/units',           label: 'الوحدات' },
-  { href: '/customers',       label: 'العملاء' },
-  { href: '/reservations',    label: 'الحجوزات' },
-  { href: '/sales',           label: 'المبيعات' },
-  { href: '/reports',         label: 'التقارير' },
-  { href: '/settings/users',  label: 'الإعدادات' },
-]
-
-export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: React.ReactNode }) {
   const cookieStore = await cookies()
 
   const supabase = createServerClient(
@@ -45,17 +33,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
           <p className="font-bold text-stone-900 text-sm truncate">{companyName}</p>
           <p className="text-stone-500 text-xs mt-1 truncate">{profile.full_name}</p>
         </div>
-        <nav className="flex-1 p-4 space-y-1">
-          {NAV.map(item => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className="block px-4 py-2 rounded-xl text-sm text-stone-700 hover:bg-stone-100 transition-colors"
-            >
-              {item.label}
-            </Link>
-          ))}
-        </nav>
+        <NavLinks />
         <div className="p-4 border-t border-stone-200">
           <SignOutButton />
         </div>

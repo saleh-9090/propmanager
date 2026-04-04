@@ -6,40 +6,6 @@
 
 
 -- ============================================================
--- HELPER FUNCTIONS
--- security definer = runs as postgres (bypasses RLS on user_profiles)
--- This avoids infinite recursion when RLS policies call these functions
--- ============================================================
-
-create or replace function auth_company_id()
-returns uuid
-language sql
-security definer
-stable
-as $$
-  select company_id from public.user_profiles where id = auth.uid()
-$$;
-
-create or replace function auth_role()
-returns text
-language sql
-security definer
-stable
-as $$
-  select role from public.user_profiles where id = auth.uid()
-$$;
-
-create or replace function auth_has_role(roles text[])
-returns boolean
-language sql
-security definer
-stable
-as $$
-  select (select role from public.user_profiles where id = auth.uid()) = any(roles)
-$$;
-
-
--- ============================================================
 -- TABLES
 -- ============================================================
 
@@ -72,6 +38,39 @@ create table if not exists public.user_profiles (
   telegram_chat_id  bigint,
   telegram_verified boolean not null default false
 );
+
+-- ============================================================
+-- HELPER FUNCTIONS
+-- security definer = runs as postgres (bypasses RLS on user_profiles)
+-- This avoids infinite recursion when RLS policies call these functions
+-- ============================================================
+
+create or replace function auth_company_id()
+returns uuid
+language sql
+security definer
+stable
+as $$
+  select company_id from public.user_profiles where id = auth.uid()
+$$;
+
+create or replace function auth_role()
+returns text
+language sql
+security definer
+stable
+as $$
+  select role from public.user_profiles where id = auth.uid()
+$$;
+
+create or replace function auth_has_role(roles text[])
+returns boolean
+language sql
+security definer
+stable
+as $$
+  select (select role from public.user_profiles where id = auth.uid()) = any(roles)
+$$;
 
 -- Projects
 create table if not exists public.projects (
