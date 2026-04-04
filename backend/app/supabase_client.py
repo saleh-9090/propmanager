@@ -106,3 +106,159 @@ async def delete_auth_user(user_id: str) -> None:
             headers=_SVC,
         )
         r.raise_for_status()
+
+
+# ── Projects ──────────────────────────────────────────────────────────────────
+
+async def get_projects_with_buildings(token: str) -> list[dict]:
+    """Returns projects with their buildings nested. RLS enforces company_id."""
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/projects",
+            params={
+                "select": "*,buildings(id,building_number,name,total_floors)",
+                "order": "created_at.asc",
+            },
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        return r.json()
+
+
+async def create_project(data: dict, token: str) -> dict:
+    async with httpx.AsyncClient() as c:
+        r = await c.post(f"{_REST}/projects", json=data, headers=_user_headers(token))
+        r.raise_for_status()
+        return r.json()[0]
+
+
+async def update_project(project_id: str, data: dict, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/projects",
+            params={"id": f"eq.{project_id}"},
+            json=data,
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+async def delete_project(project_id: str, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.delete(
+            f"{_REST}/projects",
+            params={"id": f"eq.{project_id}"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+# ── Buildings ─────────────────────────────────────────────────────────────────
+
+async def create_building(data: dict, token: str) -> dict:
+    async with httpx.AsyncClient() as c:
+        r = await c.post(f"{_REST}/buildings", json=data, headers=_user_headers(token))
+        r.raise_for_status()
+        return r.json()[0]
+
+
+async def update_building(building_id: str, data: dict, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/buildings",
+            params={"id": f"eq.{building_id}"},
+            json=data,
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+async def delete_building(building_id: str, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.delete(
+            f"{_REST}/buildings",
+            params={"id": f"eq.{building_id}"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+# ── Units ─────────────────────────────────────────────────────────────────────
+
+async def get_units(building_id: str, token: str) -> list[dict]:
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/units",
+            params={
+                "building_id": f"eq.{building_id}",
+                "select": "*",
+                "order": "floor.asc,unit_number.asc",
+            },
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        return r.json()
+
+
+async def create_unit(data: dict, token: str) -> dict:
+    async with httpx.AsyncClient() as c:
+        r = await c.post(f"{_REST}/units", json=data, headers=_user_headers(token))
+        r.raise_for_status()
+        return r.json()[0]
+
+
+async def update_unit(unit_id: str, data: dict, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/units",
+            params={"id": f"eq.{unit_id}"},
+            json=data,
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+async def delete_unit(unit_id: str, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.delete(
+            f"{_REST}/units",
+            params={"id": f"eq.{unit_id}"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+# ── CSV import helpers ────────────────────────────────────────────────────────
+
+async def get_buildings_in_project(project_id: str, token: str) -> list[dict]:
+    """User-JWT read — returns buildings for the project (RLS enforces company)."""
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/buildings",
+            params={"project_id": f"eq.{project_id}", "select": "id,building_number"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        return r.json()
+
+
+async def get_existing_sak_ids(sak_ids: list[str]) -> list[str]:
+    """Service-role check — SAK is globally unique across all companies."""
+    if not sak_ids:
+        return []
+    sak_list = ",".join(sak_ids)
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/units",
+            params={"sak_id": f"in.({sak_list})", "select": "sak_id"},
+            headers=_SVC,
+        )
+        r.raise_for_status()
+        return [row["sak_id"] for row in r.json()]
+
+
+async def bulk_insert_units(units: list[dict]) -> None:
+    """Service-role bulk insert — company_id is set explicitly by the caller."""
+    async with httpx.AsyncClient() as c:
+        r = await c.post(f"{_REST}/units", json=units, headers=_SVC)
+        r.raise_for_status()
