@@ -1,7 +1,7 @@
 // frontend/src/app/settings/users/page.tsx
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { apiGet, apiPost, apiPatch, apiDelete } from '@/lib/api'
 
 type UserProfile = {
@@ -32,7 +32,7 @@ export default function UsersPage() {
   const [inviteError, setInviteError] = useState('')
   const [inviteSuccess, setInviteSuccess] = useState('')
 
-  async function loadUsers() {
+  const loadUsers = useCallback(async () => {
     try {
       const data = await apiGet<UserProfile[]>('/users')
       setUsers(data)
@@ -41,9 +41,9 @@ export default function UsersPage() {
     } finally {
       setLoading(false)
     }
-  }
+  }, [])
 
-  useEffect(() => { loadUsers() }, [])
+  useEffect(() => { loadUsers() }, [loadUsers])
 
   async function handleInvite(e: React.FormEvent) {
     e.preventDefault()
@@ -176,7 +176,7 @@ export default function UsersPage() {
                       value={u.role}
                       onChange={e => handleRoleChange(u.id, e.target.value)}
                     >
-                      {ROLES.map(r => (
+                      {ROLES.filter(r => r !== 'owner').map(r => (
                         <option key={r} value={r}>{ROLE_LABELS[r]}</option>
                       ))}
                     </select>

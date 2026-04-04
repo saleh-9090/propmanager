@@ -28,7 +28,7 @@ export default function OnboardingPage() {
     try {
       await apiPost('/onboarding', {
         company_name: form.company_name,
-        company_name_ar: form.company_name_ar || null,
+        company_name_ar: form.company_name_ar,
         full_name: form.full_name,
         phone: form.phone || null,
         rega_license: form.rega_license || null,
