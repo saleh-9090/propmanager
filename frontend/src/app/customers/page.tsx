@@ -47,10 +47,13 @@ export default function CustomersPage() {
   const [error, setError] = useState('')
   const [modal, setModal] = useState<{ open: boolean; customer?: Customer }>({ open: false })
   const [isOwner, setIsOwner] = useState(false)
+  const [canWrite, setCanWrite] = useState(false)
 
   useEffect(() => {
     getUserProfile().then(profile => {
-      setIsOwner((profile as { role?: string } | null)?.role === 'owner')
+      const role = (profile as { role?: string } | null)?.role
+      setIsOwner(role === 'owner')
+      setCanWrite(['owner', 'sales_manager', 'reservation_manager'].includes(role ?? ''))
     })
   }, [])
 
@@ -95,9 +98,11 @@ export default function CustomersPage() {
     <div className="max-w-6xl">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-stone-900">العملاء</h1>
-        <button onClick={() => setModal({ open: true })} className="btn-primary">
-          + عميل جديد
-        </button>
+        {canWrite && (
+          <button onClick={() => setModal({ open: true })} className="btn-primary">
+            + عميل جديد
+          </button>
+        )}
       </div>
 
       <div className="mb-4">
@@ -143,11 +148,13 @@ export default function CustomersPage() {
                   <td className="py-3">{c.phone}</td>
                   <td className="py-3 text-stone-500">{LEAD_SOURCE_LABELS[c.lead_source] ?? c.lead_source}</td>
                   <td className="py-3 text-left">
-                    <button
-                      onClick={() => setModal({ open: true, customer: c })}
-                      className="text-stone-400 hover:text-stone-700 ml-2 text-xs"
-                      title="تعديل"
-                    >✎</button>
+                    {canWrite && (
+                      <button
+                        onClick={() => setModal({ open: true, customer: c })}
+                        className="text-stone-400 hover:text-stone-700 ml-2 text-xs"
+                        title="تعديل"
+                      >✎</button>
+                    )}
                     {isOwner && (
                       <button
                         onClick={() => handleDelete(c.id, c.full_name)}
