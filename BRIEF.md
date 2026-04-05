@@ -328,6 +328,8 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 - [x] Phase 1, Day 3 — Project → Building → Unit management + CSV bulk import
 - [x] Phase 1, Day 4 — Customer management
 - [x] Phase 1, Day 5 — Unit availability board
+- [x] Phase 2, Day 6 — Reservation flow (create, deposit, expiry, cancellation + refund)
+- [x] Phase 2, Day 7 — Sale flow (direct sale + reservation-to-sale conversion + deposit return)
 
 ---
 
@@ -508,7 +510,42 @@ Full project/building/unit CRUD with CSV bulk import. Split-view UI at `/project
 
 **Test count:** 48 total (46 Day 1-4 + 2 new)
 
-**Next:** Day 6 — Reservation flow.
+**Next:** Day 8 — Commission split entry + finalization.
+
+---
+
+### Day 6 — Reservation Flow (2026-04-04)
+
+**What was built:**
+- `GET /reservations`, `POST /reservations`, `PATCH /reservations/{id}`, `POST /reservations/{id}/cancel`
+- Reservation creates with deposit tracking; cancel returns unit to available
+- Supabase client: `get_reservations`, `get_reservation`, `create_reservation`, `update_reservation`, `cancel_reservation`, `get_unit`, `update_unit_status`
+- Frontend `/reservations` page: table with status badges (نشطة/منتهية), ReservationForm modal, CancelModal
+- Entry point buttons from `/units` and `/customers` pages (`?unit_id=` / `?customer_id=` prefill)
+- WRITERS = `{owner, sales_manager, reservation_manager}`
+
+**Test count:** 56 total
+
+**Next:** Day 7 — Sale flow.
+
+---
+
+### Day 7 — Sale Flow (2026-04-04)
+
+**What was built:**
+- `GET /sales` (READERS: owner/sales_manager/cfo/accountant), `POST /sales` (WRITERS: owner/sales_manager)
+- Direct sale mode: unit available check → insert sale → unit→sold
+- Conversion mode: reservation active check + unit_id consistency check → insert sale → unit→sold → reservation→converted
+- `POST /reservations/{id}/return-deposit` — sets deposit_returned=True on converted reservations
+- Supabase client: `get_sales`, `create_sale`, `update_reservation_status`, `record_deposit_return`; `get_reservations` filter expanded to `in.(active,converted)`
+- Frontend `/sales` page: list + "بيعة جديدة" button + `?reservation_id=` URL prefill
+- `SaleForm`: dual-mode (direct = unit/customer pickers; conversion = locked read-only)
+- Reservations page rewritten: محوّلة badge, "تحويل" Link, "سداد العربون" button, ReturnDepositModal
+- `canSale` role gate (owner/sales_manager only) separate from `canWrite`
+
+**Test count:** 67 total
+
+**Next:** Day 8 — Commission split entry + finalization.
 
 ---
 
