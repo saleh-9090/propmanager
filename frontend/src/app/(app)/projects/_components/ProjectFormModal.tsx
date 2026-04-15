@@ -65,7 +65,7 @@ export default function ProjectFormModal({ project, onClose, onSaved }: Props) {
       <div className="card w-full max-w-md">
         <h2 className="text-lg font-semibold mb-4">{project ? 'تعديل المشروع' : 'مشروع جديد'}</h2>
         {error && (
-          <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">{error}</div>
+          <div className="mb-3 p-3 bg-danger/10 border border-danger/30 rounded-xl text-danger text-sm">{error}</div>
         )}
         <form onSubmit={handleSubmit} className="space-y-3">
           <div>

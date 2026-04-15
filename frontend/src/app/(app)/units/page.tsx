@@ -36,9 +36,9 @@ const STATUS_LABELS: Record<string, string> = {
   sold:      'مباعة',
 }
 const STATUS_COLORS: Record<string, string> = {
-  available: 'bg-green-100 text-green-700',
-  reserved:  'bg-yellow-100 text-yellow-700',
-  sold:      'bg-red-100 text-red-700',
+  available: 'bg-success/15 text-success',
+  reserved:  'bg-warning/15 text-warning',
+  sold:      'bg-danger/15 text-danger',
 }
 
 export default function UnitsPage() {
@@ -99,7 +99,7 @@ export default function UnitsPage() {
 
   return (
     <div className="max-w-6xl">
-      <h1 className="text-2xl font-bold text-stone-900 mb-6">لوحة الوحدات</h1>
+      <h1 className="text-2xl font-bold text-text-primary mb-6">لوحة الوحدات</h1>
 
       {/* Filter bar */}
       <div className="flex flex-wrap items-center gap-4 mb-4">
@@ -147,16 +147,16 @@ export default function UnitsPage() {
 
       {/* Summary row */}
       {!loading && !error && (
-        <p className="text-sm text-stone-500 mb-4">
+        <p className="text-sm text-text-secondary mb-4">
           {counts.available} متاحة · {counts.reserved} محجوزة · {counts.sold} مباعة
         </p>
       )}
 
-      {loading && <p className="text-stone-500 text-sm">جارٍ التحميل...</p>}
-      {error && <p className="text-red-600 text-sm">{error}</p>}
+      {loading && <p className="text-text-secondary text-sm">جارٍ التحميل...</p>}
+      {error && <p className="text-danger text-sm">{error}</p>}
 
       {!loading && !error && filtered.length === 0 && (
-        <p className="text-stone-400 text-sm text-center py-16">
+        <p className="text-text-muted text-sm text-center py-16">
           لا توجد وحدات تطابق الفلتر المحدد
         </p>
       )}
@@ -166,17 +166,17 @@ export default function UnitsPage() {
           {filtered.map(u => (
             <div key={u.id} className="card p-4">
               <div className="flex items-start justify-between mb-2">
-                <span className="font-bold text-stone-900">{u.unit_number}</span>
+                <span className="font-bold text-text-primary">{u.unit_number}</span>
                 <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${STATUS_COLORS[u.status]}`}>
                   {STATUS_LABELS[u.status]}
                 </span>
               </div>
-              <div className="text-sm text-stone-600 space-y-0.5">
+              <div className="text-sm text-text-secondary space-y-0.5">
                 <div>ط {u.floor}</div>
                 <div>{u.area_sqm.toLocaleString('ar-SA')} م²</div>
                 <div>{u.price.toLocaleString('ar-SA')} ر.س</div>
               </div>
-              <div className="mt-2 font-mono text-xs text-stone-400 truncate">{u.sak_id}</div>
+              <div className="mt-2 font-mono text-xs text-text-muted truncate">{u.sak_id}</div>
               {u.status === 'available' && (
                 <Link
                   href={`/reservations?unit_id=${u.id}`}

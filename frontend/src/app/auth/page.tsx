@@ -34,17 +34,36 @@ export default function AuthPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="card w-full max-w-md">
-        <h1 className="text-2xl font-bold text-stone-900 mb-1">
+    <div className="min-h-screen flex items-center justify-center p-4 bg-bg-base">
+      <div
+        className="absolute inset-0 opacity-30 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 50% 0%, color-mix(in srgb, var(--color-primary) 20%, transparent), transparent 60%)',
+        }}
+      />
+      <div className="card-elevated w-full max-w-md relative">
+        <div className="flex items-center gap-3 mb-6">
+          <div
+            className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold"
+            style={{ background: 'linear-gradient(135deg, var(--color-primary), var(--color-secondary))' }}
+          >
+            P
+          </div>
+          <div>
+            <p className="text-text-primary font-semibold">PropManager</p>
+            <p className="text-text-muted text-xs">نظام إدارة المبيعات العقارية</p>
+          </div>
+        </div>
+
+        <h1 className="text-xl font-semibold text-text-primary mb-1">
           {mode === 'login' ? 'تسجيل الدخول' : 'إنشاء حساب'}
         </h1>
-        <p className="text-stone-500 text-sm mb-8">
-          PropManager — نظام إدارة المبيعات العقارية
+        <p className="text-text-muted text-sm mb-6">
+          {mode === 'login' ? 'أدخل بياناتك للدخول إلى لوحة التحكم' : 'ابدأ بإنشاء حساب جديد'}
         </p>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-input text-danger text-sm">
             {error}
           </div>
         )}
@@ -82,7 +101,7 @@ export default function AuthPage() {
         <button
           type="button"
           onClick={() => { setMode(m => m === 'login' ? 'signup' : 'login'); setError('') }}
-          className="mt-4 text-sm text-primary-600 hover:underline w-full text-center"
+          className="mt-5 text-sm w-full text-center text-text-secondary hover:text-text-primary transition-colors"
         >
           {mode === 'login' ? 'إنشاء حساب جديد' : 'تسجيل الدخول بحساب موجود'}
         </button>

@@ -18,18 +18,14 @@ export default function NavLinks() {
   const pathname = usePathname()
 
   return (
-    <nav className="flex-1 p-4 space-y-1">
+    <nav className="flex-1 px-3 py-3 space-y-0.5 overflow-y-auto">
       {NAV.map(item => {
         const active = pathname === item.href || pathname.startsWith(item.href + '/')
         return (
           <Link
             key={item.href}
             href={item.href}
-            className={`block px-4 py-2.5 rounded-xl text-sm transition-colors ${
-              active
-                ? 'bg-primary-50 text-primary-700 font-medium'
-                : 'text-stone-600 hover:bg-stone-100 hover:text-stone-900'
-            }`}
+            className={active ? 'nav-item nav-item-active font-medium' : 'nav-item'}
           >
             {item.label}
           </Link>

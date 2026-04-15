@@ -6,7 +6,7 @@ import UnitsPanel from './_components/UnitsPanel'
 export default function ProjectsPage() {
   return (
     <div className="flex h-full -m-8 overflow-hidden">
-      <aside className="w-72 bg-white border-l border-stone-200 flex flex-col shrink-0 overflow-y-auto">
+      <aside className="w-72 bg-bg-surface border-l border-border flex flex-col shrink-0 overflow-y-auto">
         <Suspense>
           <ProjectTree />
         </Suspense>

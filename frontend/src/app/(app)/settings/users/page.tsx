@@ -88,16 +88,16 @@ export default function UsersPage() {
 
   return (
     <div className="max-w-4xl">
-      <h1 className="text-2xl font-bold text-stone-900 mb-8">إدارة المستخدمين</h1>
+      <h1 className="text-2xl font-bold text-text-primary mb-8">إدارة المستخدمين</h1>
 
       {/* Invite form */}
       <div className="card mb-8">
         <h2 className="text-lg font-semibold mb-4">دعوة مستخدم جديد</h2>
         {inviteError && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">{inviteError}</div>
+          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-xl text-danger text-sm">{inviteError}</div>
         )}
         {inviteSuccess && (
-          <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-xl text-green-700 text-sm">{inviteSuccess}</div>
+          <div className="mb-4 p-3 bg-success/10 border border-success/30 rounded-xl text-success text-sm">{inviteSuccess}</div>
         )}
         <form onSubmit={handleInvite} className="grid grid-cols-2 gap-4">
           <div>
@@ -153,26 +153,26 @@ export default function UsersPage() {
       <div className="card">
         <h2 className="text-lg font-semibold mb-4">المستخدمون</h2>
         {loading ? (
-          <p className="text-stone-500 text-sm">جارٍ التحميل...</p>
+          <p className="text-text-secondary text-sm">جارٍ التحميل...</p>
         ) : listError ? (
-          <p className="text-red-600 text-sm">{listError}</p>
+          <p className="text-danger text-sm">{listError}</p>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-stone-200">
-                <th className="text-right pb-3 font-medium text-stone-600">الاسم</th>
-                <th className="text-right pb-3 font-medium text-stone-600">الدور</th>
-                <th className="text-right pb-3 font-medium text-stone-600">الجوال</th>
+              <tr className="border-b border-border">
+                <th className="text-right pb-3 font-medium text-text-secondary">الاسم</th>
+                <th className="text-right pb-3 font-medium text-text-secondary">الدور</th>
+                <th className="text-right pb-3 font-medium text-text-secondary">الجوال</th>
                 <th className="pb-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-border">
               {users.map(u => (
                 <tr key={u.id}>
                   <td className="py-3">{u.full_name}</td>
                   <td className="py-3">
                     <select
-                      className="text-sm border border-stone-200 rounded-lg px-2 py-1 bg-white"
+                      className="text-sm border border-border rounded-lg px-2 py-1 bg-bg-surface"
                       value={u.role}
                       onChange={e => handleRoleChange(u.id, e.target.value)}
                     >
@@ -181,11 +181,11 @@ export default function UsersPage() {
                       ))}
                     </select>
                   </td>
-                  <td className="py-3 text-stone-500">{u.phone ?? '—'}</td>
+                  <td className="py-3 text-text-secondary">{u.phone ?? '—'}</td>
                   <td className="py-3 text-left">
                     <button
                       onClick={() => handleDelete(u.id, u.full_name)}
-                      className="text-red-500 hover:text-red-700 text-sm"
+                      className="text-danger hover:text-danger text-sm"
                     >
                       حذف
                     </button>

@@ -110,8 +110,8 @@ export default function SaleForm({ reservation, onClose, onSaved }: Props) {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-lg font-bold text-stone-900 mb-4">
+      <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-lg font-bold text-text-primary mb-4">
           {isConversion ? 'تحويل حجز إلى بيعة' : 'بيعة جديدة'}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -119,14 +119,14 @@ export default function SaleForm({ reservation, onClose, onSaved }: Props) {
           {/* Unit */}
           {isConversion ? (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">الوحدة</label>
-              <p className="input bg-stone-50 text-stone-600">
+              <label className="block text-sm font-medium text-text-secondary mb-1">الوحدة</label>
+              <p className="input bg-bg-elevated text-text-secondary">
                 {reservation.units.unit_number} — {reservation.units.price.toLocaleString('ar-SA')} ر.س
               </p>
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">الوحدة *</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">الوحدة *</label>
               <input
                 className="input w-full mb-1"
                 placeholder="بحث برقم الوحدة..."
@@ -152,14 +152,14 @@ export default function SaleForm({ reservation, onClose, onSaved }: Props) {
           {/* Customer */}
           {isConversion ? (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">العميل</label>
-              <p className="input bg-stone-50 text-stone-600">
+              <label className="block text-sm font-medium text-text-secondary mb-1">العميل</label>
+              <p className="input bg-bg-elevated text-text-secondary">
                 {reservation.customers.full_name} — {reservation.customers.id_number}
               </p>
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">العميل *</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">العميل *</label>
               <input
                 className="input w-full mb-1"
                 placeholder="بحث بالاسم أو الهوية..."
@@ -184,7 +184,7 @@ export default function SaleForm({ reservation, onClose, onSaved }: Props) {
 
           {/* Payment amount */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">مبلغ البيع (ر.س) *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">مبلغ البيع (ر.س) *</label>
             <input
               type="number"
               className="input w-full"
@@ -198,7 +198,7 @@ export default function SaleForm({ reservation, onClose, onSaved }: Props) {
 
           {/* Payment method */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">طريقة الدفع *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">طريقة الدفع *</label>
             <select
               className="input w-full"
               value={paymentMethod}
@@ -213,7 +213,7 @@ export default function SaleForm({ reservation, onClose, onSaved }: Props) {
 
           {/* Payment reference */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">رقم المرجع</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">رقم المرجع</label>
             <input
               className="input w-full"
               value={paymentReference}
@@ -224,7 +224,7 @@ export default function SaleForm({ reservation, onClose, onSaved }: Props) {
 
           {/* Payment date */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">تاريخ البيع *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">تاريخ البيع *</label>
             <input
               type="date"
               className="input w-full"
@@ -236,7 +236,7 @@ export default function SaleForm({ reservation, onClose, onSaved }: Props) {
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">ملاحظات</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">ملاحظات</label>
             <textarea
               className="input w-full"
               rows={2}
@@ -245,7 +245,7 @@ export default function SaleForm({ reservation, onClose, onSaved }: Props) {
             />
           </div>
 
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
 
           <div className="flex gap-3 justify-end pt-2">
             <button type="button" onClick={onClose} className="btn-ghost">إلغاء</button>

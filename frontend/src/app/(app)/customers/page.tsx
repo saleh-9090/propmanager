@@ -28,7 +28,7 @@ const ID_TYPE_LABELS: Record<string, string> = {
 const ID_TYPE_COLORS: Record<string, string> = {
   national_id: 'bg-blue-100 text-blue-700',
   iqama:       'bg-purple-100 text-purple-700',
-  passport:    'bg-stone-100 text-stone-700',
+  passport:    'bg-bg-elevated text-text-secondary',
 }
 
 const LEAD_SOURCE_LABELS: Record<string, string> = {
@@ -98,7 +98,7 @@ export default function CustomersPage() {
   return (
     <div className="max-w-6xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-stone-900">العملاء</h1>
+        <h1 className="text-2xl font-bold text-text-primary">العملاء</h1>
         {canWrite && (
           <button onClick={() => setModal({ open: true })} className="btn-primary">
             + عميل جديد
@@ -117,37 +117,37 @@ export default function CustomersPage() {
 
       <div className="card">
         {loading ? (
-          <p className="text-stone-500 text-sm">جارٍ التحميل...</p>
+          <p className="text-text-secondary text-sm">جارٍ التحميل...</p>
         ) : error ? (
-          <p className="text-red-600 text-sm">{error}</p>
+          <p className="text-danger text-sm">{error}</p>
         ) : customers.length === 0 ? (
-          <p className="text-stone-400 text-sm text-center py-12">
+          <p className="text-text-muted text-sm text-center py-12">
             {search ? 'لا توجد نتائج' : 'لا يوجد عملاء — أضف عميلاً جديداً'}
           </p>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-stone-200 text-right">
-                <th className="pb-3 font-medium text-stone-600">الاسم</th>
-                <th className="pb-3 font-medium text-stone-600">الهوية</th>
-                <th className="pb-3 font-medium text-stone-600">رقم الهوية</th>
-                <th className="pb-3 font-medium text-stone-600">الجوال</th>
-                <th className="pb-3 font-medium text-stone-600">المصدر</th>
+              <tr className="border-b border-border text-right">
+                <th className="pb-3 font-medium text-text-secondary">الاسم</th>
+                <th className="pb-3 font-medium text-text-secondary">الهوية</th>
+                <th className="pb-3 font-medium text-text-secondary">رقم الهوية</th>
+                <th className="pb-3 font-medium text-text-secondary">الجوال</th>
+                <th className="pb-3 font-medium text-text-secondary">المصدر</th>
                 <th className="pb-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-border">
               {customers.map(c => (
                 <tr key={c.id}>
                   <td className="py-3 font-medium">{c.full_name}</td>
                   <td className="py-3">
-                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${ID_TYPE_COLORS[c.id_type] ?? 'bg-stone-100 text-stone-600'}`}>
+                    <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${ID_TYPE_COLORS[c.id_type] ?? 'bg-bg-elevated text-text-secondary'}`}>
                       {ID_TYPE_LABELS[c.id_type] ?? c.id_type}
                     </span>
                   </td>
-                  <td className="py-3 font-mono text-xs text-stone-500">{c.id_number}</td>
+                  <td className="py-3 font-mono text-xs text-text-secondary">{c.id_number}</td>
                   <td className="py-3">{c.phone}</td>
-                  <td className="py-3 text-stone-500">{LEAD_SOURCE_LABELS[c.lead_source] ?? c.lead_source}</td>
+                  <td className="py-3 text-text-secondary">{LEAD_SOURCE_LABELS[c.lead_source] ?? c.lead_source}</td>
                   <td className="py-3 text-left">
                     <Link
                       href={`/reservations?customer_id=${c.id}`}
@@ -158,14 +158,14 @@ export default function CustomersPage() {
                     {canWrite && (
                       <button
                         onClick={() => setModal({ open: true, customer: c })}
-                        className="text-stone-400 hover:text-stone-700 ml-2 text-xs"
+                        className="text-text-muted hover:text-text-secondary ml-2 text-xs"
                         title="تعديل"
                       >✎</button>
                     )}
                     {isOwner && (
                       <button
                         onClick={() => handleDelete(c.id, c.full_name)}
-                        className="text-red-400 hover:text-red-600 text-xs"
+                        className="text-danger/70 hover:text-danger text-xs"
                         title="حذف"
                       >×</button>
                     )}

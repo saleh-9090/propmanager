@@ -43,13 +43,13 @@ export default function OnboardingPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4">
-      <div className="card w-full max-w-lg">
-        <h1 className="text-2xl font-bold text-stone-900 mb-1">إعداد الشركة</h1>
-        <p className="text-stone-500 text-sm mb-8">أدخل بيانات شركتك للبدء</p>
+    <div className="min-h-screen flex items-center justify-center p-4 bg-bg-base">
+      <div className="card-elevated w-full max-w-lg">
+        <h1 className="text-xl font-semibold text-text-primary mb-1">إعداد الشركة</h1>
+        <p className="text-text-muted text-sm mb-6">أدخل بيانات شركتك للبدء</p>
 
         {error && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm">
+          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-input text-danger text-sm">
             {error}
           </div>
         )}

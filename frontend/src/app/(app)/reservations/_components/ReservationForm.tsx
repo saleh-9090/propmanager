@@ -173,8 +173,8 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
-        <h2 className="text-lg font-bold text-stone-900 mb-4">
+      <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-lg p-6 max-h-[90vh] overflow-y-auto">
+        <h2 className="text-lg font-bold text-text-primary mb-4">
           {isEdit ? 'تعديل الحجز' : 'حجز جديد'}
         </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -182,14 +182,14 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
           {/* Unit */}
           {unitLocked ? (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">الوحدة</label>
-              <p className="input bg-stone-50 text-stone-600">
+              <label className="block text-sm font-medium text-text-secondary mb-1">الوحدة</label>
+              <p className="input bg-bg-elevated text-text-secondary">
                 {reservation?.units.unit_number ?? (prefillUnitLabel || prefillUnitId)}
               </p>
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">الوحدة *</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">الوحدة *</label>
               <input
                 className="input w-full mb-1"
                 placeholder="بحث برقم الوحدة..."
@@ -215,14 +215,14 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
           {/* Customer */}
           {customerLocked ? (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">العميل</label>
-              <p className="input bg-stone-50 text-stone-600">
+              <label className="block text-sm font-medium text-text-secondary mb-1">العميل</label>
+              <p className="input bg-bg-elevated text-text-secondary">
                 {reservation?.customers.full_name ?? (prefillCustomerLabel || prefillCustomerId)}
               </p>
             </div>
           ) : (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">العميل *</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">العميل *</label>
               <input
                 className="input w-full mb-1"
                 placeholder="بحث بالاسم أو الهوية..."
@@ -247,7 +247,7 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
 
           {/* Deposit amount */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">مبلغ العربون (ر.س) *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">مبلغ العربون (ر.س) *</label>
             <input
               type="number"
               className="input w-full"
@@ -261,7 +261,7 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
 
           {/* Payment method */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">طريقة الدفع *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">طريقة الدفع *</label>
             <select
               className="input w-full"
               value={paymentMethod}
@@ -276,7 +276,7 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
 
           {/* Payment reference */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">رقم المرجع</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">رقم المرجع</label>
             <input
               className="input w-full"
               value={paymentReference}
@@ -287,7 +287,7 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
 
           {/* Payment date */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">تاريخ الدفع *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">تاريخ الدفع *</label>
             <input
               type="date"
               className="input w-full"
@@ -299,7 +299,7 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
 
           {/* Expires at */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">تاريخ انتهاء الحجز *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">تاريخ انتهاء الحجز *</label>
             <input
               type="date"
               className="input w-full"
@@ -311,7 +311,7 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
 
           {/* Notes */}
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">ملاحظات</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">ملاحظات</label>
             <textarea
               className="input w-full"
               rows={2}
@@ -323,18 +323,18 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
           {/* Receipt upload — edit mode only */}
           {isEdit && (
             <div>
-              <label className="block text-sm font-medium text-stone-700 mb-1">الإيصال</label>
+              <label className="block text-sm font-medium text-text-secondary mb-1">الإيصال</label>
               {reservation.receipt_file_url ? (
                 <div className="flex items-center gap-3">
                   <a
                     href={reservation.receipt_file_url}
                     target="_blank"
                     rel="noreferrer"
-                    className="text-primary-600 text-sm underline"
+                    className="text-brand-primary text-sm underline"
                   >
                     عرض الإيصال
                   </a>
-                  <label className="text-sm text-stone-500 cursor-pointer hover:text-stone-700">
+                  <label className="text-sm text-text-secondary cursor-pointer hover:text-text-secondary">
                     استبدال
                     <input
                       type="file"
@@ -345,7 +345,7 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
                   </label>
                 </div>
               ) : (
-                <label className="flex items-center gap-2 text-sm text-stone-500 cursor-pointer hover:text-stone-700">
+                <label className="flex items-center gap-2 text-sm text-text-secondary cursor-pointer hover:text-text-secondary">
                   <input
                     type="file"
                     accept="image/*,application/pdf"
@@ -358,7 +358,7 @@ export default function ReservationForm({ reservation, prefillUnitId, prefillCus
             </div>
           )}
 
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
 
           <div className="flex gap-3 justify-end pt-2">
             <button type="button" onClick={onClose} className="btn-ghost">إلغاء</button>

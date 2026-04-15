@@ -1,4 +1,3 @@
-// frontend/src/app/dashboard/_components/SignOutButton.tsx
 'use client'
 
 import { useRouter } from 'next/navigation'
@@ -14,7 +13,7 @@ export default function SignOutButton() {
   }
 
   return (
-    <button onClick={handleSignOut} className="btn-ghost w-full text-sm">
+    <button onClick={handleSignOut} className="btn-ghost w-full justify-start">
       تسجيل الخروج
     </button>
   )

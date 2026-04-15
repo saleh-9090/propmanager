@@ -453,3 +453,121 @@ async def record_deposit_return(reservation_id: str, data: dict, token: str) -> 
             headers=_user_headers(token),
         )
         r.raise_for_status()
+
+
+async def get_sale(sale_id: str, token: str) -> dict | None:
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/sales",
+            params={
+                "id": f"eq.{sale_id}",
+                "select": "*,units(unit_number,building_id,price),customers(full_name,id_number,phone)",
+            },
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        return rows[0] if rows else None
+
+
+async def update_sale(sale_id: str, data: dict, token: str) -> dict | None:
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/sales",
+            params={"id": f"eq.{sale_id}"},
+            json=data,
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        return rows[0] if rows else None
+
+
+# ── Sale participants ─────────────────────────────────────────────────────────
+
+async def get_sale_participants(sale_id: str, token: str) -> list[dict]:
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/sale_participants",
+            params={
+                "sale_id": f"eq.{sale_id}",
+                "select": "*,user_profiles(id,full_name,role),external_realtors(id,name,office_name)",
+                "order": "id.asc",
+            },
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        return r.json()
+
+
+async def create_sale_participant(data: dict, token: str) -> dict:
+    async with httpx.AsyncClient() as c:
+        r = await c.post(f"{_REST}/sale_participants", json=data, headers=_user_headers(token))
+        r.raise_for_status()
+        return r.json()[0]
+
+
+async def update_sale_participant(participant_id: str, data: dict, token: str) -> dict | None:
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/sale_participants",
+            params={"id": f"eq.{participant_id}"},
+            json=data,
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        return rows[0] if rows else None
+
+
+async def delete_sale_participant(participant_id: str, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.delete(
+            f"{_REST}/sale_participants",
+            params={"id": f"eq.{participant_id}"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+
+
+# ── External realtors ─────────────────────────────────────────────────────────
+
+async def get_external_realtors(token: str) -> list[dict]:
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/external_realtors",
+            params={"select": "*", "order": "name.asc"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        return r.json()
+
+
+async def create_external_realtor(data: dict, token: str) -> dict:
+    async with httpx.AsyncClient() as c:
+        r = await c.post(f"{_REST}/external_realtors", json=data, headers=_user_headers(token))
+        r.raise_for_status()
+        return r.json()[0]
+
+
+async def update_external_realtor(realtor_id: str, data: dict, token: str) -> dict | None:
+    async with httpx.AsyncClient() as c:
+        r = await c.patch(
+            f"{_REST}/external_realtors",
+            params={"id": f"eq.{realtor_id}"},
+            json=data,
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        return rows[0] if rows else None
+
+
+async def delete_external_realtor(realtor_id: str, token: str) -> None:
+    async with httpx.AsyncClient() as c:
+        r = await c.delete(
+            f"{_REST}/external_realtors",
+            params={"id": f"eq.{realtor_id}"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()

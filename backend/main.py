@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.routers import onboarding, users, projects, buildings, units, customers, reservations, sales
+from app.routers import onboarding, users, projects, buildings, units, customers, reservations, sales, external_realtors
 
 app = FastAPI(
     title="PropManager API",
@@ -25,6 +25,7 @@ app.include_router(units.router)
 app.include_router(customers.router)
 app.include_router(reservations.router)
 app.include_router(sales.router)
+app.include_router(external_realtors.router)
 
 
 @app.get("/health")

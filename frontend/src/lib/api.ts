@@ -1,6 +1,6 @@
 import { supabase } from './supabase'
 
-const BACKEND = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8001'
+const BACKEND = process.env.NEXT_PUBLIC_API_URL || '/api/backend'
 
 async function getToken(): Promise<string> {
   const { data } = await supabase.auth.getSession()

@@ -1,7 +1,7 @@
 'use client'
 
 import { Suspense, useEffect, useState, useCallback } from 'react'
-import { useSearchParams } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { apiGet } from '@/lib/api'
 import { getUserProfile } from '@/lib/supabase'
 import SaleForm from './_components/SaleForm'
@@ -36,6 +36,7 @@ const PAYMENT_METHOD_LABELS: Record<string, string> = {
 }
 
 function SalesContent() {
+  const router = useRouter()
   const searchParams = useSearchParams()
   const reservationId = searchParams.get('reservation_id') ?? undefined
 
@@ -102,7 +103,7 @@ function SalesContent() {
   return (
     <div className="max-w-6xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-stone-900">المبيعات</h1>
+        <h1 className="text-2xl font-bold text-text-primary">المبيعات</h1>
         {canWrite && (
           <button onClick={() => setForm({ open: true })} className="btn-primary">
             + بيعة جديدة
@@ -111,38 +112,42 @@ function SalesContent() {
       </div>
 
       {prefillError && (
-        <p className="text-red-600 text-sm mb-4">{prefillError}</p>
+        <p className="text-danger text-sm mb-4">{prefillError}</p>
       )}
 
       <div className="card">
         {loading ? (
-          <p className="text-stone-500 text-sm">جارٍ التحميل...</p>
+          <p className="text-text-secondary text-sm">جارٍ التحميل...</p>
         ) : error ? (
-          <p className="text-red-600 text-sm">{error}</p>
+          <p className="text-danger text-sm">{error}</p>
         ) : sales.length === 0 ? (
-          <p className="text-stone-400 text-sm text-center py-12">لا توجد مبيعات</p>
+          <p className="text-text-muted text-sm text-center py-12">لا توجد مبيعات</p>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-stone-200 text-right">
-                <th className="pb-3 font-medium text-stone-600">الوحدة</th>
-                <th className="pb-3 font-medium text-stone-600">العميل</th>
-                <th className="pb-3 font-medium text-stone-600">مبلغ البيع</th>
-                <th className="pb-3 font-medium text-stone-600">طريقة الدفع</th>
-                <th className="pb-3 font-medium text-stone-600">تاريخ البيع</th>
-                <th className="pb-3 font-medium text-stone-600">النوع</th>
+              <tr className="border-b border-border text-right">
+                <th className="pb-3 font-medium text-text-secondary">الوحدة</th>
+                <th className="pb-3 font-medium text-text-secondary">العميل</th>
+                <th className="pb-3 font-medium text-text-secondary">مبلغ البيع</th>
+                <th className="pb-3 font-medium text-text-secondary">طريقة الدفع</th>
+                <th className="pb-3 font-medium text-text-secondary">تاريخ البيع</th>
+                <th className="pb-3 font-medium text-text-secondary">النوع</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-border">
               {sales.map(s => (
-                <tr key={s.id}>
+                <tr
+                  key={s.id}
+                  onClick={() => router.push(`/sales/${s.id}`)}
+                  className="cursor-pointer hover:bg-bg-elevated/50 transition-colors"
+                >
                   <td className="py-3 font-medium">{s.units.unit_number}</td>
                   <td className="py-3">{s.customers.full_name}</td>
                   <td className="py-3">{s.payment_amount.toLocaleString('ar-SA')} ر.س</td>
                   <td className="py-3">{PAYMENT_METHOD_LABELS[s.payment_method] ?? s.payment_method}</td>
                   <td className="py-3">{s.payment_date}</td>
                   <td className="py-3">
-                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-600">
+                    <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-bg-elevated text-text-secondary">
                       {s.reservation_id ? 'تحويل من حجز' : 'مباشر'}
                     </span>
                   </td>

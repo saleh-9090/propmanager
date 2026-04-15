@@ -250,6 +250,20 @@ create table if not exists public.sale_participants (
 
 create index if not exists sale_participants_sale_idx on public.sale_participants (sale_id);
 
+-- Parallel FK so PostgREST can embed user_profiles via sale_participants.user_id
+-- (the auth.users FK above is for referential integrity; PostgREST needs one
+-- pointing at a public-schema table to resolve the embed)
+do $$
+begin
+  if not exists (
+    select 1 from pg_constraint where conname = 'sale_participants_user_profile_fkey'
+  ) then
+    alter table public.sale_participants
+      add constraint sale_participants_user_profile_fkey
+      foreign key (user_id) references public.user_profiles(id) on delete set null;
+  end if;
+end$$;
+
 -- Audit log
 create table if not exists public.audit_log (
   id          uuid default gen_random_uuid() primary key,

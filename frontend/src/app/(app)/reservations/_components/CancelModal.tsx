@@ -38,11 +38,11 @@ export default function CancelModal({ reservationId, onClose, onCancelled }: Pro
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
-        <h2 className="text-lg font-bold text-stone-900 mb-4">إلغاء الحجز</h2>
+      <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-md p-6">
+        <h2 className="text-lg font-bold text-text-primary mb-4">إلغاء الحجز</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">سبب الإلغاء *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">سبب الإلغاء *</label>
             <textarea
               className="input w-full"
               rows={3}
@@ -52,7 +52,7 @@ export default function CancelModal({ reservationId, onClose, onCancelled }: Pro
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">مبلغ الاسترداد (ر.س)</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">مبلغ الاسترداد (ر.س)</label>
             <input
               type="number"
               className="input w-full"
@@ -62,12 +62,12 @@ export default function CancelModal({ reservationId, onClose, onCancelled }: Pro
               onChange={e => setRefundAmount(Number(e.target.value))}
             />
           </div>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
           <div className="flex gap-3 justify-end pt-2">
             <button type="button" onClick={onClose} className="btn-ghost">
               تراجع
             </button>
-            <button type="submit" disabled={saving} className="bg-red-600 text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-red-700 disabled:opacity-50">
+            <button type="submit" disabled={saving} className="bg-danger text-white px-4 py-2 rounded-xl text-sm font-medium hover:bg-danger/90 disabled:opacity-50">
               {saving ? 'جارٍ الإلغاء...' : 'تأكيد الإلغاء'}
             </button>
           </div>

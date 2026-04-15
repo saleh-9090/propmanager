@@ -93,19 +93,19 @@ export default function CsvImportModal({ projectId, onClose, onSaved }: Props) {
       <div className="card w-full max-w-2xl">
         <h2 className="text-lg font-semibold mb-4">استيراد وحدات من CSV</h2>
 
-        <div className="mb-4 p-3 bg-stone-50 rounded-xl text-xs text-stone-600 space-y-1">
+        <div className="mb-4 p-3 bg-bg-elevated rounded-xl text-xs text-text-secondary space-y-1">
           <p className="font-medium">الأعمدة المطلوبة:</p>
           <p className="font-mono">building_number, unit_number, floor, area_sqm, price, sak_id</p>
           <p className="font-medium mt-1">اختيارية:</p>
           <p className="font-mono">electricity_meter_id, water_meter_id</p>
-          <p className="text-stone-400 mt-1">يجب أن تكون المباني موجودة مسبقاً. يُرجع الملف بأكمله في حال وجود أي خطأ.</p>
+          <p className="text-text-muted mt-1">يجب أن تكون المباني موجودة مسبقاً. يُرجع الملف بأكمله في حال وجود أي خطأ.</p>
         </div>
 
         <div className="mb-4">
           <input ref={fileRef} type="file" accept=".csv" onChange={handleFileChange} className="hidden" />
           <button
             onClick={() => fileRef.current?.click()}
-            className="btn-ghost border border-stone-200 w-full py-3 text-sm"
+            className="btn-ghost border border-border w-full py-3 text-sm"
           >
             {fileName || 'اختر ملف CSV...'}
           </button>
@@ -113,16 +113,16 @@ export default function CsvImportModal({ projectId, onClose, onSaved }: Props) {
 
         {preview && (
           <div className="mb-4 overflow-x-auto">
-            <p className="text-xs text-stone-500 mb-2">معاينة ({totalRows} صف)</p>
-            <table className="text-xs w-full border border-stone-200 rounded-xl overflow-hidden">
-              <thead className="bg-stone-50">
+            <p className="text-xs text-text-secondary mb-2">معاينة ({totalRows} صف)</p>
+            <table className="text-xs w-full border border-border rounded-xl overflow-hidden">
+              <thead className="bg-bg-elevated">
                 <tr>
                   {preview[0].map((h, i) => (
-                    <th key={i} className="px-2 py-1.5 text-right font-medium text-stone-600 border-b border-stone-200 whitespace-nowrap">{h}</th>
+                    <th key={i} className="px-2 py-1.5 text-right font-medium text-text-secondary border-b border-border whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-stone-100">
+              <tbody className="divide-y divide-border">
                 {preview.slice(1).map((row, i) => (
                   <tr key={i}>
                     {row.map((cell, j) => (
@@ -133,17 +133,17 @@ export default function CsvImportModal({ projectId, onClose, onSaved }: Props) {
               </tbody>
             </table>
             {totalRows > 5 && (
-              <p className="text-xs text-stone-400 mt-1 text-center">... و {totalRows - 5} صفوف أخرى</p>
+              <p className="text-xs text-text-muted mt-1 text-center">... و {totalRows - 5} صفوف أخرى</p>
             )}
           </div>
         )}
 
         {errors.length > 0 && (
-          <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-xl text-sm max-h-48 overflow-y-auto">
-            <p className="font-semibold text-red-700 mb-2">أخطاء في الملف ({errors.length})</p>
+          <div className="mb-4 p-3 bg-danger/10 border border-danger/30 rounded-xl text-sm max-h-48 overflow-y-auto">
+            <p className="font-semibold text-danger mb-2">أخطاء في الملف ({errors.length})</p>
             <div className="space-y-1">
               {errors.map((e, i) => (
-                <p key={i} className="text-xs text-red-600">
+                <p key={i} className="text-xs text-danger">
                   {e.row > 0 ? `صف ${e.row}` : 'خطأ عام'}{e.field ? ` (${e.field})` : ''}: {e.message}
                 </p>
               ))}

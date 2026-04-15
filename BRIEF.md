@@ -2,6 +2,7 @@
 
 > Read this file at the start of every session to get full context on what we're building.
 > Also read D:/claude/WORKSPACE.md for machine setup, account details, and cross-project context.
+> Project root is now D:/claude/products/propmanager/
 
 ---
 
@@ -330,6 +331,7 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 - [x] Phase 1, Day 5 — Unit availability board
 - [x] Phase 2, Day 6 — Reservation flow (create, deposit, expiry, cancellation + refund)
 - [x] Phase 2, Day 7 — Sale flow (direct sale + reservation-to-sale conversion + deposit return)
+- [x] Phase 2, Day 8 — Commission split entry + finalization (+ external realtor CRUD)
 
 ---
 
@@ -549,17 +551,52 @@ Full project/building/unit CRUD with CSV bulk import. Split-view UI at `/project
 
 ---
 
+### Day 8 — Commission Splits (2026-04-15)
+
+**What was built:**
+- Backend: `GET /sales/{id}`, `PATCH /sales/{id}/commission-total`, `GET/POST/PATCH/DELETE /sales/{id}/participants`, `POST /sales/{id}/finalize`
+- Backend: full CRUD on `/external-realtors` (WRITERS: owner/sales_manager, DELETERS: owner)
+- `_ensure_unlocked(sale)` helper blocks all edits once `commission_finalized=true`
+- Finalize validates: `total_commission_amount > 0` and participants sum to 100% (±0.01)
+- Running-sum guard on add/update participant prevents allocations > 100%
+- Frontend: `/sales/[id]` detail page with unit/customer/payment card + CommissionSection
+- CommissionSection: total input, allocation progress bar (red >100% / green =100% / yellow <100%), participant list with inline % edit, delete, finalize button
+- AddParticipantModal: internal/external toggle, user or realtor selector, inline "+ وسيط جديد" form
+- Sales list rows now linked to detail page (row click)
+- Supabase client: added `get_sale`, `update_sale`, `get/create/update/delete_sale_participant`, full external_realtors CRUD
+
+**Next:** Day 9 — Audit trail (or Day 13 Arabic PDFs for CV demo).
+
+---
+
 ## Error Log
 
-> Empty — errors documented here as they occur.
 > Format: ERR-001, ERR-002, etc. — symptom → root cause → fix → lesson.
+
+### ERR-001 — Commission page 500: PostgREST 400 on nested `user_profiles` embed (2026-04-15)
+- **Symptom:** `GET /sales/{id}/participants` returned 500. Backend trace: `httpx.HTTPStatusError: 400 Bad Request` from PostgREST on `select=*,user_profiles(...)`.
+- **Root cause:** `sale_participants.user_id` had an FK to `auth.users(id)`, not to `public.user_profiles(id)`. PostgREST resource embedding only follows FKs it can see in the exposed schema.
+- **Fix:** Added `sale_participants_user_profile_fkey` FK from `sale_participants.user_id` → `user_profiles.id`, then `notify pgrst, 'reload schema'`.
+- **Lesson:** Whenever a table joins a user via `auth.users`, add a parallel FK to `user_profiles` so PostgREST embeds work.
+
+### ERR-002 — Supabase project paused → "Failed to fetch" on sign-in (2026-04-15)
+- **Symptom:** Sign-in stalled with browser "Failed to fetch". DNS: `klmldkcpbknkinevwkae.supabase.co` → NXDOMAIN.
+- **Root cause:** Free-tier Supabase project auto-paused after ~1 week of inactivity. Subdomain goes dead.
+- **Fix:** `POST /v1/projects/{ref}/restore` via management API (needs PAT only). ~90s to ACTIVE_HEALTHY.
+- **Lesson:** If a propmanager pause bites us again during a demo, restore takes 1-2 min — keep the PAT handy. Long-term: upgrade to paid OR hit the project weekly with a keepalive.
+
+### ERR-003 — "Failed to fetch" from browser via Tailscale (2026-04-15)
+- **Symptom:** Frontend on port 3000 loads but API calls fail. `NEXT_PUBLIC_API_URL=http://localhost:8001` resolves to the *client* device, not the Windows host.
+- **Root cause:** Hardcoded `localhost` in browser-side env.
+- **Fix:** Added Next.js rewrite `/api/backend/:path* → http://localhost:8001/:path*` and changed `NEXT_PUBLIC_API_URL=/api/backend`. API now same-origin, works over any network.
+- **Lesson:** Any Next.js app talking to a local backend should proxy via rewrites, not expose the backend port directly.
 
 ---
 
 ## Folder Structure
 
 ```
-D:/claude/propmanager/
+D:/claude/products/propmanager/
 ├── backend/          ← FastAPI app
 ├── frontend/         ← Next.js app
 ├── docs/             ← Schema, API specs, decisions
@@ -577,6 +614,6 @@ D:/claude/propmanager/
 
 | Asset | Source | Status |
 |---|---|---|
-| Arabic auth page | `proptech/frontend/src/app/auth/` | Not copied yet |
-| RTL Tailwind config | `proptech/frontend/tailwind.config.ts` | Not copied yet |
-| Supabase RLS pattern | `proptech/docs/supabase-schema.sql` | Not copied yet — needs company_id + role extension |
+| Arabic auth page | `products/proptech/frontend/src/app/auth/` | Not copied yet |
+| RTL Tailwind config | `products/proptech/frontend/tailwind.config.ts` | Not copied yet |
+| Supabase RLS pattern | `products/proptech/docs/supabase-schema.sql` | Not copied yet — needs company_id + role extension |

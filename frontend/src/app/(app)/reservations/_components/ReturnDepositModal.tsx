@@ -43,11 +43,11 @@ export default function ReturnDepositModal({ reservationId, onClose, onReturned 
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6">
-        <h2 className="text-lg font-bold text-stone-900 mb-4">تسجيل استرداد العربون</h2>
+      <div className="bg-bg-surface rounded-2xl shadow-xl w-full max-w-md p-6">
+        <h2 className="text-lg font-bold text-text-primary mb-4">تسجيل استرداد العربون</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">طريقة الاسترداد *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">طريقة الاسترداد *</label>
             <select
               className="input w-full"
               value={returnMethod}
@@ -60,7 +60,7 @@ export default function ReturnDepositModal({ reservationId, onClose, onReturned 
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">تاريخ الاسترداد *</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">تاريخ الاسترداد *</label>
             <input
               type="date"
               className="input w-full"
@@ -70,7 +70,7 @@ export default function ReturnDepositModal({ reservationId, onClose, onReturned 
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-stone-700 mb-1">رقم المرجع</label>
+            <label className="block text-sm font-medium text-text-secondary mb-1">رقم المرجع</label>
             <input
               className="input w-full"
               value={returnReference}
@@ -78,7 +78,7 @@ export default function ReturnDepositModal({ reservationId, onClose, onReturned 
               placeholder="رقم التحويل أو الشيك..."
             />
           </div>
-          {error && <p className="text-red-600 text-sm">{error}</p>}
+          {error && <p className="text-danger text-sm">{error}</p>}
           <div className="flex gap-3 justify-end pt-2">
             <button type="button" onClick={onClose} className="btn-ghost">تراجع</button>
             <button type="submit" disabled={saving} className="btn-primary">

@@ -39,7 +39,7 @@ function isExpired(expiresAt: string) {
 function StatusBadge({ reservation }: { reservation: Reservation }) {
   if (reservation.status === 'converted') {
     return (
-      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-stone-100 text-stone-600">
+      <span className="px-2 py-0.5 rounded-full text-xs font-medium bg-bg-elevated text-text-secondary">
         محوّلة
       </span>
     )
@@ -47,7 +47,7 @@ function StatusBadge({ reservation }: { reservation: Reservation }) {
   const expired = isExpired(reservation.expires_at)
   return (
     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-      expired ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'
+      expired ? 'bg-danger/15 text-danger' : 'bg-success/15 text-success'
     }`}>
       {expired ? 'منتهية' : 'نشطة'}
     </span>
@@ -124,7 +124,7 @@ function ReservationsContent() {
   return (
     <div className="max-w-6xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-2xl font-bold text-stone-900">الحجوزات</h1>
+        <h1 className="text-2xl font-bold text-text-primary">الحجوزات</h1>
         {canWrite && (
           <button
             onClick={() => setForm({ open: true })}
@@ -137,26 +137,26 @@ function ReservationsContent() {
 
       <div className="card">
         {loading ? (
-          <p className="text-stone-500 text-sm">جارٍ التحميل...</p>
+          <p className="text-text-secondary text-sm">جارٍ التحميل...</p>
         ) : error ? (
-          <p className="text-red-600 text-sm">{error}</p>
+          <p className="text-danger text-sm">{error}</p>
         ) : reservations.length === 0 ? (
-          <p className="text-stone-400 text-sm text-center py-12">لا توجد حجوزات</p>
+          <p className="text-text-muted text-sm text-center py-12">لا توجد حجوزات</p>
         ) : (
           <table className="w-full text-sm">
             <thead>
-              <tr className="border-b border-stone-200 text-right">
-                <th className="pb-3 font-medium text-stone-600">الوحدة</th>
-                <th className="pb-3 font-medium text-stone-600">العميل</th>
-                <th className="pb-3 font-medium text-stone-600">مبلغ العربون</th>
-                <th className="pb-3 font-medium text-stone-600">طريقة الدفع</th>
-                <th className="pb-3 font-medium text-stone-600">تاريخ الدفع</th>
-                <th className="pb-3 font-medium text-stone-600">تاريخ الانتهاء</th>
-                <th className="pb-3 font-medium text-stone-600">الحالة</th>
+              <tr className="border-b border-border text-right">
+                <th className="pb-3 font-medium text-text-secondary">الوحدة</th>
+                <th className="pb-3 font-medium text-text-secondary">العميل</th>
+                <th className="pb-3 font-medium text-text-secondary">مبلغ العربون</th>
+                <th className="pb-3 font-medium text-text-secondary">طريقة الدفع</th>
+                <th className="pb-3 font-medium text-text-secondary">تاريخ الدفع</th>
+                <th className="pb-3 font-medium text-text-secondary">تاريخ الانتهاء</th>
+                <th className="pb-3 font-medium text-text-secondary">الحالة</th>
                 <th className="pb-3" />
               </tr>
             </thead>
-            <tbody className="divide-y divide-stone-100">
+            <tbody className="divide-y divide-border">
               {reservations.map(r => (
                 <tr key={r.id}>
                   <td className="py-3 font-medium">{r.units.unit_number}</td>
@@ -171,12 +171,12 @@ function ReservationsContent() {
                       <>
                         <button
                           onClick={() => setForm({ open: true, reservation: r })}
-                          className="text-stone-400 hover:text-stone-700 text-xs"
+                          className="text-text-muted hover:text-text-secondary text-xs"
                           title="تعديل"
                         >✎</button>
                         <button
                           onClick={() => setCancelTarget(r.id)}
-                          className="text-red-400 hover:text-red-600 text-xs"
+                          className="text-danger/70 hover:text-danger text-xs"
                           title="إلغاء"
                         >✕</button>
                       </>
@@ -184,7 +184,7 @@ function ReservationsContent() {
                     {r.status === 'active' && canSale && (
                       <Link
                         href={`/sales?reservation_id=${r.id}`}
-                        className="text-primary-600 hover:text-primary-800 text-xs font-medium"
+                        className="text-brand-primary hover:opacity-80 text-xs font-medium"
                       >
                         تحويل
                       </Link>
@@ -192,13 +192,13 @@ function ReservationsContent() {
                     {r.status === 'converted' && canSale && !r.deposit_returned && (
                       <button
                         onClick={() => setReturnDepositTarget(r.id)}
-                        className="text-amber-600 hover:text-amber-800 text-xs font-medium"
+                        className="text-warning hover:text-warning text-xs font-medium"
                       >
                         سداد العربون
                       </button>
                     )}
                     {r.status === 'converted' && r.deposit_returned && (
-                      <span className="text-green-600 text-xs">✓ عربون مُسترد</span>
+                      <span className="text-success text-xs">✓ عربون مُسترد</span>
                     )}
                   </td>
                 </tr>
