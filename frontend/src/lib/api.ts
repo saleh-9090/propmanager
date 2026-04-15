@@ -48,3 +48,15 @@ export async function apiDelete(path: string): Promise<void> {
   })
   if (!res.ok) throw new Error(await res.text())
 }
+
+export async function apiOpenBlob(path: string): Promise<void> {
+  const token = await getToken()
+  const res = await fetch(`${BACKEND}${path}`, {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+  if (!res.ok) throw new Error(await res.text())
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  window.open(url, '_blank', 'noopener,noreferrer')
+  setTimeout(() => URL.revokeObjectURL(url), 60_000)
+}

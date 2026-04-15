@@ -332,6 +332,8 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 - [x] Phase 2, Day 6 — Reservation flow (create, deposit, expiry, cancellation + refund)
 - [x] Phase 2, Day 7 — Sale flow (direct sale + reservation-to-sale conversion + deposit return)
 - [x] Phase 2, Day 8 — Commission split entry + finalization (+ external realtor CRUD)
+- [x] Perf pass — ProfileContext eliminates per-page Supabase profile fetch
+- [x] Phase 4, Day 13 — Arabic Reservation Receipt PDF (سند قبض)
 
 ---
 
@@ -362,7 +364,7 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 - [ ] Day 12: Telegram bot (n8n webhook, auth, daily summary, query commands)
 
 ### Phase 4 — PDF Generation + Payments
-- [ ] Day 13: Reservation Agreement PDF generation
+- [x] Day 13: Reservation Agreement PDF generation
 - [ ] Day 14: After-Sale Agreement PDF generation
 - [ ] Day 15: Moyasar SaaS subscription billing
 
@@ -569,6 +571,52 @@ Full project/building/unit CRUD with CSV bulk import. Split-view UI at `/project
 
 ---
 
+### Perf Pass — ProfileContext (2026-04-15)
+
+**What changed:**
+- `frontend/src/app/(app)/_components/ProfileContext.tsx` — new React context holding `{role, fullName, companyName}` populated once in the authenticated layout
+- `(app)/layout.tsx` wraps children in `<ProfileProvider>` using values already fetched server-side for the header
+- `sales/page.tsx`, `sales/[id]/page.tsx`, `customers/page.tsx`, `reservations/page.tsx` — replaced `useEffect(() => getUserProfile())` + `canWrite` state with synchronous `const role = useRole()`
+
+**Why:** Each page was issuing its own Supabase profile round-trip on mount to gate UI buttons. Middleware + layout + page = 3-4 sequential auth/profile fetches per navigation, causing visible latency. Now fetched once per authenticated session.
+
+---
+
+### Day 13 — Arabic Reservation Receipt PDF (2026-04-15)
+
+**What was built:**
+
+One-page Arabic PDF سند قبض عربون حجز rendered on-demand from existing reservation + unit + customer + company data. Opens in a new tab via authenticated blob download.
+
+**Backend:**
+| File | Purpose |
+|---|---|
+| `backend/app/pdf/receipt.py` | `generate_receipt_pdf(*, reservation, unit, customer, company, project, building) -> bytes` — ReportLab canvas with header band, amount box, customer/payment/unit blocks, 4 generic terms, dual signatures, stamp circle |
+| `backend/app/pdf/fonts/Amiri-Regular.ttf` | Naskh font with Arabic Presentation Forms (U+FB50–FEFF) — required because ReportLab cannot apply OpenType GSUB shaping |
+| `backend/app/pdf/fonts/Amiri-Bold.ttf` | Bold variant |
+| `backend/app/routers/reservations.py` | `GET /reservations/{id}/receipt.pdf` — role gate (owner/sales_manager/reservation_manager/cfo), loads refs, returns PDF Response |
+| `backend/app/supabase_client.py` | Added `get_customer`, `get_project`, `get_building`, `get_company` lookup helpers |
+| `backend/requirements.txt` | `reportlab`, `arabic-reshaper`, `python-bidi`, `num2words` |
+
+**Frontend:**
+| File | Purpose |
+|---|---|
+| `frontend/src/lib/api.ts` | `apiOpenBlob(path)` — fetch with Bearer token, blob URL, `window.open` new tab, revoke after 60s |
+| `frontend/src/app/(app)/reservations/page.tsx` | "سند" button on every row calls `apiOpenBlob('/reservations/{id}/receipt.pdf')` |
+
+**Key decisions:**
+- Generic layout (inspired by reference photos, not a pixel-perfect clone) — no customer logo required
+- Arabic amount-in-words via `num2words(int(amount), lang="ar")` + "ريال سعودي فقط لا غير"
+- Footer terms (14-day default reservation, cash-full-payment priority, refundable deposit) written into the template, not configurable per-company in v1
+- `arabic_reshaper.reshape()` → `bidi.get_display()` pipeline is mandatory; output renders only when the font includes presentation forms
+- Auth via `apiOpenBlob` blob pattern — browser `<a href>` nav strips the JWT; must fetch+blob+open
+
+**Gotcha logged:** Tajawal (Kufi) from Google Fonts main branch ships without presentation forms → characters render as `.notdef` triangles. Amiri (431KB regular / 413KB bold) is the ReportLab-compatible baseline. Using a non-Amiri Arabic font later requires verifying its cmap covers FB50–FEFF.
+
+**Next:** Day 14 — After-Sale Agreement PDF (same stack, different template).
+
+---
+
 ## Error Log
 
 > Format: ERR-001, ERR-002, etc. — symptom → root cause → fix → lesson.
@@ -590,6 +638,13 @@ Full project/building/unit CRUD with CSV bulk import. Split-view UI at `/project
 - **Root cause:** Hardcoded `localhost` in browser-side env.
 - **Fix:** Added Next.js rewrite `/api/backend/:path* → http://localhost:8001/:path*` and changed `NEXT_PUBLIC_API_URL=/api/backend`. API now same-origin, works over any network.
 - **Lesson:** Any Next.js app talking to a local backend should proxy via rewrites, not expose the backend port directly.
+
+### ERR-004 — `POST /sales/{id}/participants` 500 from phantom `type` column (2026-04-15)
+- **Symptom:** Adding a participant (internal or external) returned 500. Backend trace: `httpx.HTTPStatusError: 400 Bad Request` from PostgREST on `POST /rest/v1/sale_participants`.
+- **Root cause:** `add_participant` in `backend/app/routers/sales.py` built the insert payload with `"type": body.type`, but `sale_participants` has no `type` column — the schema uses a `one_participant_type` CHECK constraint that infers type from which FK is set (`user_id` vs `external_realtor_id`). The `{k: v for k, v in data.items() if v is not None}` filter didn't help because `body.type` is always populated.
+- **Fix:** Dropped `"type"` from the insert dict. The field is still used above for endpoint-level validation (picking which FK must be present); it just shouldn't be persisted.
+- **Lesson:** Pydantic request fields aren't always DB columns — when building an INSERT from a request body, whitelist by what the table actually has, not what the model carries.
+- **Operational note:** Windows backend runs without `--reload`, so code edits require a manual uvicorn restart to take effect.
 
 ---
 

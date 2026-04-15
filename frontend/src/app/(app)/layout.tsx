@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { createServerClient } from '@supabase/ssr'
 import NavLinks from './_components/NavLinks'
 import SignOutButton from './_components/SignOutButton'
+import { ProfileProvider } from './_components/ProfileContext'
 
 const ROLE_LABEL_AR: Record<string, string> = {
   owner:               'المالك',
@@ -71,7 +72,15 @@ export default async function AppLayout({ children }: { children: React.ReactNod
       </aside>
 
       <main className="flex-1 p-8 overflow-auto min-w-0">
-        {children}
+        <ProfileProvider
+          value={{
+            role: profile.role,
+            fullName: profile.full_name,
+            companyName,
+          }}
+        >
+          {children}
+        </ProfileProvider>
       </main>
     </div>
   )

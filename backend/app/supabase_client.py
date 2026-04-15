@@ -571,3 +571,53 @@ async def delete_external_realtor(realtor_id: str, token: str) -> None:
             headers=_user_headers(token),
         )
         r.raise_for_status()
+
+
+# ── Lookups for PDF generation ───────────────────────────────────────────────
+
+async def get_customer(customer_id: str, token: str) -> dict | None:
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/customers",
+            params={"id": f"eq.{customer_id}", "select": "*"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        return rows[0] if rows else None
+
+
+async def get_project(project_id: str, token: str) -> dict | None:
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/projects",
+            params={"id": f"eq.{project_id}", "select": "*"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        return rows[0] if rows else None
+
+
+async def get_building(building_id: str, token: str) -> dict | None:
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/buildings",
+            params={"id": f"eq.{building_id}", "select": "*"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        return rows[0] if rows else None
+
+
+async def get_company(company_id: str, token: str) -> dict | None:
+    async with httpx.AsyncClient() as c:
+        r = await c.get(
+            f"{_REST}/companies",
+            params={"id": f"eq.{company_id}", "select": "*"},
+            headers=_user_headers(token),
+        )
+        r.raise_for_status()
+        rows = r.json()
+        return rows[0] if rows else None

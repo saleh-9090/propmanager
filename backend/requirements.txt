@@ -7,5 +7,9 @@ pydantic[email]
 pydantic-settings
 python-jose[cryptography]
 httpx
+reportlab
+arabic-reshaper
+python-bidi
+num2words
 pytest
 pytest-asyncio>=0.21

@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { apiGet } from '@/lib/api'
-import { getUserProfile } from '@/lib/supabase'
+import { useRole } from '../../_components/ProfileContext'
 import CommissionSection from '../_components/CommissionSection'
 
 type Sale = {
@@ -38,7 +38,7 @@ export default function SaleDetailPage() {
   const [sale, setSale] = useState<Sale | null>(null)
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [role, setRole] = useState<string>('')
+  const role = useRole()
 
   const loadSale = useCallback(async () => {
     setLoading(true)
@@ -55,7 +55,6 @@ export default function SaleDetailPage() {
 
   useEffect(() => {
     loadSale()
-    getUserProfile().then(p => setRole((p as { role?: string } | null)?.role ?? ''))
   }, [loadSale])
 
   if (loading) {

@@ -156,7 +156,6 @@ async def add_participant(sale_id: str, body: ParticipantCreate, user=Depends(ge
     data = {
         "sale_id": sale_id,
         "company_id": caller["company_id"],
-        "type": body.type,
         "user_id": body.user_id,
         "external_realtor_id": body.external_realtor_id,
         "commission_percentage": body.commission_percentage,

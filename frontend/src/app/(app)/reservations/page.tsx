@@ -3,8 +3,8 @@
 import { Suspense, useEffect, useState, useCallback } from 'react'
 import { useSearchParams } from 'next/navigation'
 import Link from 'next/link'
-import { apiGet } from '@/lib/api'
-import { getUserProfile } from '@/lib/supabase'
+import { apiGet, apiOpenBlob } from '@/lib/api'
+import { useRole } from '../_components/ProfileContext'
 import ReservationForm from './_components/ReservationForm'
 import CancelModal from './_components/CancelModal'
 import ReturnDepositModal from './_components/ReturnDepositModal'
@@ -62,8 +62,9 @@ function ReservationsContent() {
   const [reservations, setReservations] = useState<Reservation[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [canWrite, setCanWrite] = useState(false)
-  const [canSale, setCanSale] = useState(false)
+  const role = useRole()
+  const canWrite = ['owner', 'sales_manager', 'reservation_manager'].includes(role)
+  const canSale = ['owner', 'sales_manager'].includes(role)
 
   const [form, setForm] = useState<{
     open: boolean
@@ -74,14 +75,6 @@ function ReservationsContent() {
 
   const [cancelTarget, setCancelTarget] = useState<string | null>(null)
   const [returnDepositTarget, setReturnDepositTarget] = useState<string | null>(null)
-
-  useEffect(() => {
-    getUserProfile().then(profile => {
-      const role = (profile as { role?: string } | null)?.role
-      setCanWrite(['owner', 'sales_manager', 'reservation_manager'].includes(role ?? ''))
-      setCanSale(['owner', 'sales_manager'].includes(role ?? ''))
-    })
-  }, [])
 
   const loadReservations = useCallback(async () => {
     setLoading(true)
@@ -167,6 +160,15 @@ function ReservationsContent() {
                   <td className="py-3">{r.expires_at}</td>
                   <td className="py-3"><StatusBadge reservation={r} /></td>
                   <td className="py-3 text-left flex items-center space-x-2 space-x-reverse">
+                    <button
+                      onClick={() =>
+                        apiOpenBlob(`/reservations/${r.id}/receipt.pdf`).catch(err =>
+                          alert(err instanceof Error ? err.message : 'تعذر تحميل السند')
+                        )
+                      }
+                      className="text-text-muted hover:text-brand-primary text-xs font-medium"
+                      title="تحميل السند (PDF)"
+                    >سند</button>
                     {r.status === 'active' && canWrite && (
                       <>
                         <button

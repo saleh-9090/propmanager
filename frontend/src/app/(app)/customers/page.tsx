@@ -4,7 +4,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { apiDelete, apiGet } from '@/lib/api'
-import { getUserProfile } from '@/lib/supabase'
+import { useRole } from '../_components/ProfileContext'
 import CustomerFormModal from './_components/CustomerFormModal'
 
 type Customer = {
@@ -47,16 +47,9 @@ export default function CustomersPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
   const [modal, setModal] = useState<{ open: boolean; customer?: Customer }>({ open: false })
-  const [isOwner, setIsOwner] = useState(false)
-  const [canWrite, setCanWrite] = useState(false)
-
-  useEffect(() => {
-    getUserProfile().then(profile => {
-      const role = (profile as { role?: string } | null)?.role
-      setIsOwner(role === 'owner')
-      setCanWrite(['owner', 'sales_manager', 'reservation_manager'].includes(role ?? ''))
-    })
-  }, [])
+  const role = useRole()
+  const isOwner = role === 'owner'
+  const canWrite = ['owner', 'sales_manager', 'reservation_manager'].includes(role)
 
   const isFirstRender = useRef(true)
 

@@ -53,10 +53,10 @@ Full study context: D:/claude/studies/BRIEF.md
 ## Domain Context
 - Product: B2B property portfolio management platform for Saudi real estate companies
 - Market: Saudi Arabia (Arabic-first, RTL, Moyasar payments, mada support)
-- Project root: D:/claude/propmanager/
-- Backend: D:/claude/propmanager/backend/
-- Frontend: D:/claude/propmanager/frontend/
-- Docs: D:/claude/propmanager/docs/
-- Data: D:/claude/propmanager/data/
-- Scripts: D:/claude/propmanager/scripts/
-- Reference project: D:/claude/proptech/ (proven patterns to borrow from)
+- Project root: D:/claude/products/propmanager/
+- Backend: D:/claude/products/propmanager/backend/
+- Frontend: D:/claude/products/propmanager/frontend/
+- Docs: D:/claude/products/propmanager/docs/
+- Data: D:/claude/products/propmanager/data/
+- Scripts: D:/claude/products/propmanager/scripts/
+- Reference project: D:/claude/products/proptech/ (proven patterns to borrow from)

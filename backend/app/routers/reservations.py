@@ -1,7 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi.responses import Response
 from pydantic import BaseModel
 from app.auth import get_current_user
 from app import supabase_client
+from app.pdf.receipt import generate_receipt_pdf
 
 router = APIRouter(prefix="/reservations", tags=["reservations"])
 
@@ -122,3 +124,45 @@ async def return_deposit(reservation_id: str, body: ReturnDepositBody, user=Depe
     data["deposit_returned"] = True
     await supabase_client.record_deposit_return(reservation_id, data, user["token"])
     return {"ok": True}
+
+
+RECEIPT_READERS = {"owner", "sales_manager", "reservation_manager", "cfo"}
+
+
+@router.get("/{reservation_id}/receipt.pdf")
+async def reservation_receipt(reservation_id: str, user=Depends(get_current_user)):
+    caller = await supabase_client.get_user_profile(user["user_id"], user["token"])
+    if not caller or caller["role"] not in RECEIPT_READERS:
+        raise HTTPException(status_code=403, detail="ليس لديك صلاحية تنزيل السند")
+
+    reservation = await supabase_client.get_reservation(reservation_id, user["token"])
+    if not reservation:
+        raise HTTPException(status_code=404, detail="الحجز غير موجود")
+
+    token = user["token"]
+    unit = await supabase_client.get_unit(reservation["unit_id"], token)
+    customer = await supabase_client.get_customer(reservation["customer_id"], token)
+    company = await supabase_client.get_company(reservation["company_id"], token)
+
+    if not (unit and customer and company):
+        raise HTTPException(status_code=404, detail="بيانات الحجز غير مكتملة")
+
+    project = await supabase_client.get_project(unit["project_id"], token) if unit.get("project_id") else None
+    building = await supabase_client.get_building(unit["building_id"], token) if unit.get("building_id") else None
+
+    pdf_bytes = generate_receipt_pdf(
+        reservation=reservation,
+        unit=unit,
+        customer=customer,
+        company=company,
+        project=project,
+        building=building,
+    )
+
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f'inline; filename="receipt-{reservation_id[:8]}.pdf"',
+        },
+    )

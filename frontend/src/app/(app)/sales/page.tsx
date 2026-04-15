@@ -3,7 +3,7 @@
 import { Suspense, useEffect, useState, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { apiGet } from '@/lib/api'
-import { getUserProfile } from '@/lib/supabase'
+import { useRole } from '../_components/ProfileContext'
 import SaleForm from './_components/SaleForm'
 
 type Sale = {
@@ -43,7 +43,8 @@ function SalesContent() {
   const [sales, setSales] = useState<Sale[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [canWrite, setCanWrite] = useState(false)
+  const role = useRole()
+  const canWrite = ['owner', 'sales_manager'].includes(role)
 
   const [form, setForm] = useState<{
     open: boolean
@@ -51,13 +52,6 @@ function SalesContent() {
   }>({ open: false })
 
   const [prefillError, setPrefillError] = useState('')
-
-  useEffect(() => {
-    getUserProfile().then(profile => {
-      const role = (profile as { role?: string } | null)?.role
-      setCanWrite(['owner', 'sales_manager'].includes(role ?? ''))
-    })
-  }, [])
 
   const loadSales = useCallback(async () => {
     setLoading(true)
