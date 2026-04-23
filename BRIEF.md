@@ -658,6 +658,13 @@ One-page Arabic PDF سند قبض عربون حجز rendered on-demand from exis
 
 **Files modified:** 14 files — schema, backend units router, layout, dashboard, all table pages (customers, reservations, sales, sales detail, settings/users, units board, projects page, UnitsPanel, UnitFormModal, CsvImportModal)
 
+**Demo credentials:**
+| Role | Email | Password |
+|---|---|---|
+| Owner | `demo@propmanager.dev` | `Demo@2026!` |
+| Sales Manager | `sales@propmanager.dev` | `Demo@2026!` |
+| Reservation Manager | `reservations@propmanager.dev` | `Demo@2026!` |
+
 **Next:** Day 14 — After-Sale Agreement PDF, or portfolio screenshots for GitHub/Upwork.
 
 ---
