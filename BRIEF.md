@@ -316,6 +316,7 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 | No ZATCA e-invoicing | Developers need compliant invoices — will use separate tool for now | Phase 3+ |
 | No portal integration (Aqar, PF) | Developers maintain two systems for marketing | Phase 3+ |
 | No mobile app | Office-first for now — responsive web is the minimum | Phase 2 polish |
+| No pagination / virtual scroll | Units board loads all units client-side — will choke at 5000+ units | Before production — server-side pagination on GET /units, dashboard stats endpoint, paginated/virtual tables |
 | ~~No bulk CSV import for units~~ | ~~Onboarding pain for large projects~~ | ~~Done — Day 3~~ |
 | Reporting is basic | Lead-source ROI, project benchmarking, cash flow forecasting not included | Phase 2 |
 
