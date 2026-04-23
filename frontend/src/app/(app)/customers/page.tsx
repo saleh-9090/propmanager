@@ -89,7 +89,7 @@ export default function CustomersPage() {
   }
 
   return (
-    <div className="max-w-6xl">
+    <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-text-primary">العملاء</h1>
         {canWrite && (
@@ -118,30 +118,31 @@ export default function CustomersPage() {
             {search ? 'لا توجد نتائج' : 'لا يوجد عملاء — أضف عميلاً جديداً'}
           </p>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-right">
-                <th className="pb-3 font-medium text-text-secondary">الاسم</th>
-                <th className="pb-3 font-medium text-text-secondary">الهوية</th>
-                <th className="pb-3 font-medium text-text-secondary">رقم الهوية</th>
-                <th className="pb-3 font-medium text-text-secondary">الجوال</th>
-                <th className="pb-3 font-medium text-text-secondary">المصدر</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">الاسم</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">الهوية</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">رقم الهوية</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">الجوال</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">المصدر</th>
                 <th className="pb-3" />
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {customers.map(c => (
                 <tr key={c.id}>
-                  <td className="py-3 font-medium">{c.full_name}</td>
-                  <td className="py-3">
+                  <td className="py-3 px-2 font-medium whitespace-nowrap">{c.full_name}</td>
+                  <td className="py-3 px-2 whitespace-nowrap">
                     <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${ID_TYPE_COLORS[c.id_type] ?? 'bg-bg-elevated text-text-secondary'}`}>
                       {ID_TYPE_LABELS[c.id_type] ?? c.id_type}
                     </span>
                   </td>
-                  <td className="py-3 font-mono text-xs text-text-secondary">{c.id_number}</td>
-                  <td className="py-3">{c.phone}</td>
-                  <td className="py-3 text-text-secondary">{LEAD_SOURCE_LABELS[c.lead_source] ?? c.lead_source}</td>
-                  <td className="py-3 text-left">
+                  <td className="py-3 px-2 font-mono text-xs text-text-secondary whitespace-nowrap">{c.id_number}</td>
+                  <td className="py-3 px-2 whitespace-nowrap">{c.phone}</td>
+                  <td className="py-3 px-2 text-text-secondary whitespace-nowrap">{LEAD_SOURCE_LABELS[c.lead_source] ?? c.lead_source}</td>
+                  <td className="py-3 px-2 text-left whitespace-nowrap">
                     <Link
                       href={`/reservations?customer_id=${c.id}`}
                       className="btn-ghost text-xs ml-2"
@@ -167,6 +168,7 @@ export default function CustomersPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

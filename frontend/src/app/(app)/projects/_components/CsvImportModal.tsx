@@ -97,7 +97,8 @@ export default function CsvImportModal({ projectId, onClose, onSaved }: Props) {
           <p className="font-medium">الأعمدة المطلوبة:</p>
           <p className="font-mono">building_number, unit_number, floor, area_sqm, price, sak_id</p>
           <p className="font-medium mt-1">اختيارية:</p>
-          <p className="font-mono">electricity_meter_id, water_meter_id</p>
+          <p className="font-mono">unit_type, electricity_meter_id, water_meter_id</p>
+          <p className="text-text-muted">unit_type: facade / interior / dual_facade</p>
           <p className="text-text-muted mt-1">يجب أن تكون المباني موجودة مسبقاً. يُرجع الملف بأكمله في حال وجود أي خطأ.</p>
         </div>
 

@@ -22,8 +22,12 @@ class UnitCreate(BaseModel):
     area_sqm: float
     price: float
     sak_id: str
+    unit_type: str | None = None
     electricity_meter_id: str | None = None
     water_meter_id: str | None = None
+
+
+VALID_UNIT_TYPES = {"facade", "interior", "dual_facade"}
 
 
 class UnitUpdate(BaseModel):
@@ -32,6 +36,7 @@ class UnitUpdate(BaseModel):
     area_sqm: float | None = None
     price: float | None = None
     sak_id: str | None = None
+    unit_type: str | None = None
     electricity_meter_id: str | None = None
     water_meter_id: str | None = None
 
@@ -152,6 +157,7 @@ async def import_units(
                 "floor": floor,
                 "area_sqm": area,
                 "price": price,
+                "unit_type": ut if (ut := (row.get("unit_type") or "").strip()) in VALID_UNIT_TYPES else None,
                 "electricity_meter_id": (row.get("electricity_meter_id") or "").strip() or None,
                 "water_meter_id": (row.get("water_meter_id") or "").strip() or None,
             })

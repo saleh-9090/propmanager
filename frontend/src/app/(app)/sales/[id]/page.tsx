@@ -59,7 +59,7 @@ export default function SaleDetailPage() {
 
   if (loading) {
     return (
-      <div className="max-w-5xl">
+      <div>
         <p className="text-text-secondary text-sm">جارٍ التحميل...</p>
       </div>
     )
@@ -67,7 +67,7 @@ export default function SaleDetailPage() {
 
   if (error || !sale) {
     return (
-      <div className="max-w-5xl">
+      <div>
         <p className="text-danger text-sm mb-4">{error || 'البيعة غير موجودة'}</p>
         <Link href="/sales" className="btn-ghost">← العودة للمبيعات</Link>
       </div>
@@ -75,7 +75,7 @@ export default function SaleDetailPage() {
   }
 
   return (
-    <div className="max-w-5xl space-y-6">
+    <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <button

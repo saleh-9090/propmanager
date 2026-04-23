@@ -5,8 +5,8 @@ import UnitsPanel from './_components/UnitsPanel'
 
 export default function ProjectsPage() {
   return (
-    <div className="flex h-full -m-8 overflow-hidden">
-      <aside className="w-72 bg-bg-surface border-l border-border flex flex-col shrink-0 overflow-y-auto">
+    <div className="flex flex-col md:flex-row h-full -m-4 md:-m-8 overflow-hidden">
+      <aside className="w-full md:w-72 bg-bg-surface border-b md:border-b-0 md:border-l border-border flex flex-col shrink-0 overflow-y-auto max-h-64 md:max-h-none">
         <Suspense>
           <ProjectTree />
         </Suspense>

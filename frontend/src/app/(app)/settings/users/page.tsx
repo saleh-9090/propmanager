@@ -87,7 +87,7 @@ export default function UsersPage() {
   }
 
   return (
-    <div className="max-w-4xl">
+    <div>
       <h1 className="text-2xl font-bold text-text-primary mb-8">إدارة المستخدمين</h1>
 
       {/* Invite form */}
@@ -99,7 +99,7 @@ export default function UsersPage() {
         {inviteSuccess && (
           <div className="mb-4 p-3 bg-success/10 border border-success/30 rounded-xl text-success text-sm">{inviteSuccess}</div>
         )}
-        <form onSubmit={handleInvite} className="grid grid-cols-2 gap-4">
+        <form onSubmit={handleInvite} className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
             <label className="label">البريد الإلكتروني *</label>
             <input
@@ -141,7 +141,7 @@ export default function UsersPage() {
               placeholder="05xxxxxxxx"
             />
           </div>
-          <div className="col-span-2">
+          <div className="md:col-span-2">
             <button type="submit" className="btn-primary" disabled={inviting}>
               {inviting ? 'جارٍ الإرسال...' : 'إرسال الدعوة'}
             </button>
@@ -157,20 +157,21 @@ export default function UsersPage() {
         ) : listError ? (
           <p className="text-danger text-sm">{listError}</p>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border">
-                <th className="text-right pb-3 font-medium text-text-secondary">الاسم</th>
-                <th className="text-right pb-3 font-medium text-text-secondary">الدور</th>
-                <th className="text-right pb-3 font-medium text-text-secondary">الجوال</th>
-                <th className="pb-3" />
+                <th className="text-right pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">الاسم</th>
+                <th className="text-right pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">الدور</th>
+                <th className="text-right pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">الجوال</th>
+                <th className="pb-3 px-2" />
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {users.map(u => (
                 <tr key={u.id}>
-                  <td className="py-3">{u.full_name}</td>
-                  <td className="py-3">
+                  <td className="py-3 px-2 whitespace-nowrap">{u.full_name}</td>
+                  <td className="py-3 px-2 whitespace-nowrap">
                     <select
                       className="text-sm border border-border rounded-lg px-2 py-1 bg-bg-surface"
                       value={u.role}
@@ -181,8 +182,8 @@ export default function UsersPage() {
                       ))}
                     </select>
                   </td>
-                  <td className="py-3 text-text-secondary">{u.phone ?? '—'}</td>
-                  <td className="py-3 text-left">
+                  <td className="py-3 px-2 text-text-secondary whitespace-nowrap">{u.phone ?? '—'}</td>
+                  <td className="py-3 px-2 text-left whitespace-nowrap">
                     <button
                       onClick={() => handleDelete(u.id, u.full_name)}
                       className="text-danger hover:text-danger text-sm"
@@ -194,6 +195,7 @@ export default function UsersPage() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
     </div>

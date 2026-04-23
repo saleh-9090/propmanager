@@ -115,7 +115,7 @@ function ReservationsContent() {
   }
 
   return (
-    <div className="max-w-6xl">
+    <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-2xl font-bold text-text-primary">الحجوزات</h1>
         {canWrite && (
@@ -136,30 +136,31 @@ function ReservationsContent() {
         ) : reservations.length === 0 ? (
           <p className="text-text-muted text-sm text-center py-12">لا توجد حجوزات</p>
         ) : (
+          <div className="overflow-x-auto">
           <table className="w-full text-sm">
             <thead>
               <tr className="border-b border-border text-right">
-                <th className="pb-3 font-medium text-text-secondary">الوحدة</th>
-                <th className="pb-3 font-medium text-text-secondary">العميل</th>
-                <th className="pb-3 font-medium text-text-secondary">مبلغ العربون</th>
-                <th className="pb-3 font-medium text-text-secondary">طريقة الدفع</th>
-                <th className="pb-3 font-medium text-text-secondary">تاريخ الدفع</th>
-                <th className="pb-3 font-medium text-text-secondary">تاريخ الانتهاء</th>
-                <th className="pb-3 font-medium text-text-secondary">الحالة</th>
-                <th className="pb-3" />
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">الوحدة</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">العميل</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">مبلغ العربون</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">طريقة الدفع</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">تاريخ الدفع</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">تاريخ الانتهاء</th>
+                <th className="pb-3 px-2 font-medium text-text-secondary whitespace-nowrap">الحالة</th>
+                <th className="pb-3 px-2" />
               </tr>
             </thead>
             <tbody className="divide-y divide-border">
               {reservations.map(r => (
                 <tr key={r.id}>
-                  <td className="py-3 font-medium">{r.units.unit_number}</td>
-                  <td className="py-3">{r.customers.full_name}</td>
-                  <td className="py-3">{r.deposit_amount.toLocaleString('ar-SA')} ر.س</td>
-                  <td className="py-3">{PAYMENT_METHOD_LABELS[r.payment_method] ?? r.payment_method}</td>
-                  <td className="py-3">{r.payment_date}</td>
-                  <td className="py-3">{r.expires_at}</td>
-                  <td className="py-3"><StatusBadge reservation={r} /></td>
-                  <td className="py-3 text-left flex items-center space-x-2 space-x-reverse">
+                  <td className="py-3 px-2 font-medium whitespace-nowrap">{r.units.unit_number}</td>
+                  <td className="py-3 px-2 whitespace-nowrap">{r.customers.full_name}</td>
+                  <td className="py-3 px-2 whitespace-nowrap">{r.deposit_amount.toLocaleString('ar-SA')} ر.س</td>
+                  <td className="py-3 px-2 whitespace-nowrap">{PAYMENT_METHOD_LABELS[r.payment_method] ?? r.payment_method}</td>
+                  <td className="py-3 px-2 whitespace-nowrap">{r.payment_date}</td>
+                  <td className="py-3 px-2 whitespace-nowrap">{r.expires_at}</td>
+                  <td className="py-3 px-2 whitespace-nowrap"><StatusBadge reservation={r} /></td>
+                  <td className="py-3 px-2 text-left whitespace-nowrap flex items-center space-x-2 space-x-reverse">
                     <button
                       onClick={() =>
                         apiOpenBlob(`/reservations/${r.id}/receipt.pdf`).catch(err =>
@@ -207,6 +208,7 @@ function ReservationsContent() {
               ))}
             </tbody>
           </table>
+          </div>
         )}
       </div>
 

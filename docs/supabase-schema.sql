@@ -123,6 +123,8 @@ create table if not exists public.units (
   -- Utility IDs
   electricity_meter_id text,
   water_meter_id       text,
+  -- Classification
+  unit_type            text check (unit_type in ('facade', 'interior', 'dual_facade')),
   -- Pricing
   price                numeric(14,2) not null,
   -- Status

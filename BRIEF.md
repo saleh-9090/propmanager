@@ -149,6 +149,7 @@ audit_log
 | `price` | SAR |
 | `electricity_meter_id` | |
 | `water_meter_id` | |
+| `unit_type` | `facade` / `interior` / `dual_facade` (nullable) |
 | `status` | `available` / `reserved` / `sold` |
 | `project_id`, `building_id` | FK |
 
@@ -315,7 +316,7 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 | No ZATCA e-invoicing | Developers need compliant invoices — will use separate tool for now | Phase 3+ |
 | No portal integration (Aqar, PF) | Developers maintain two systems for marketing | Phase 3+ |
 | No mobile app | Office-first for now — responsive web is the minimum | Phase 2 polish |
-| No bulk CSV import for units | Onboarding pain for large projects | Phase 1 — must ship with launch |
+| ~~No bulk CSV import for units~~ | ~~Onboarding pain for large projects~~ | ~~Done — Day 3~~ |
 | Reporting is basic | Lead-source ROI, project benchmarking, cash flow forecasting not included | Phase 2 |
 
 ---
@@ -334,6 +335,11 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 - [x] Phase 2, Day 8 — Commission split entry + finalization (+ external realtor CRUD)
 - [x] Perf pass — ProfileContext eliminates per-page Supabase profile fetch
 - [x] Phase 4, Day 13 — Arabic Reservation Receipt PDF (سند قبض)
+- [x] unit_type field added (facade/interior/dual_facade) — schema, backend, frontend
+- [x] Dashboard page — KPI cards, unit distribution, recent sales, expiring reservations
+- [x] Demo data seed script (scripts/seed_demo.py) — 2 projects, 4 buildings, 24 units, 12 customers, 7 reservations, 5 sales, 9 commission splits
+- [x] Mobile responsive layout — collapsible sidebar, horizontal-scroll tables, proper cell padding
+- [x] Phase 5 — Mobile responsiveness (partial)
 
 ---
 
@@ -369,7 +375,7 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 - [ ] Day 15: Moyasar SaaS subscription billing
 
 ### Phase 5 — Polish & Launch
-- [ ] Mobile responsiveness
+- [x] Mobile responsiveness (collapsible sidebar, scroll tables, cell padding)
 - [ ] Arabic error messages
 - [ ] Beta launch to Phase 0 validated companies
 
@@ -614,6 +620,45 @@ One-page Arabic PDF سند قبض عربون حجز rendered on-demand from exis
 **Gotcha logged:** Tajawal (Kufi) from Google Fonts main branch ships without presentation forms → characters render as `.notdef` triangles. Amiri (431KB regular / 413KB bold) is the ReportLab-compatible baseline. Using a non-Amiri Arabic font later requires verifying its cmap covers FB50–FEFF.
 
 **Next:** Day 14 — After-Sale Agreement PDF (same stack, different template).
+
+---
+
+### Demo Data + unit_type + Dashboard + Mobile Responsive (2026-04-23)
+
+**What was built:**
+
+1. **unit_type field** — `facade` / `interior` / `dual_facade` added to schema, backend (Pydantic models + CSV import parser), and 4 frontend components (UnitFormModal, UnitsPanel, CsvImportModal, units board). SQL migration at `docs/migrations/001_add_unit_type.sql`.
+
+2. **Demo data seed script** (`scripts/seed_demo.py`) — Populates realistic Saudi real estate data via Supabase service role key:
+   - 1 company (شركة النخبة للتطوير العقاري), 3 users (owner/sales_manager/reservation_manager)
+   - 2 projects (أبراج النرجس Riyadh + فلل الياسمين Jeddah), 4 buildings, 24 units
+   - 12 customers with Saudi names/IDs, 2 external realtors
+   - 7 reservations (4 active, 1 cancelled with deposit return, 2 converted)
+   - 5 sales (2 from reservation, 3 direct), 9 commission split entries
+   - `--clean` flag auto-detects demo company and removes all data before re-seeding
+   - Login: demo@propmanager.dev / Demo@2026!
+
+3. **Dashboard page** — KPI cards (available units, active reservations, completed sales, total revenue), unit distribution progress bars, recent sales list with links, expiring-in-7-days reservation alerts.
+
+4. **Mobile responsive layout:**
+   - `AppShell` client component wraps the layout — mobile top bar with hamburger, sidebar slides in as overlay from the right, overlay dismiss
+   - Projects page: building sidebar stacks vertically on mobile (max-h-64, scrollable)
+   - All tables: `overflow-x-auto` + `whitespace-nowrap` for horizontal scroll
+   - All table cells: `px-2` padding for column separation
+   - Settings form: responsive grid (1-col mobile, 2-col desktop)
+
+5. **Supabase restore** — project was auto-paused (free tier), restored via management API PAT.
+
+**Files created:**
+| File | Purpose |
+|---|---|
+| `scripts/seed_demo.py` | Demo data seeder with `--clean` support |
+| `docs/migrations/001_add_unit_type.sql` | SQL migration for unit_type column |
+| `frontend/src/app/(app)/_components/AppShell.tsx` | Mobile-responsive shell with collapsible sidebar |
+
+**Files modified:** 14 files — schema, backend units router, layout, dashboard, all table pages (customers, reservations, sales, sales detail, settings/users, units board, projects page, UnitsPanel, UnitFormModal, CsvImportModal)
+
+**Next:** Day 14 — After-Sale Agreement PDF, or portfolio screenshots for GitHub/Upwork.
 
 ---
 

@@ -11,6 +11,7 @@ type Unit = {
   area_sqm: number
   price: number
   sak_id: string
+  unit_type: string | null
   electricity_meter_id: string | null
   water_meter_id: string | null
 }
@@ -30,6 +31,7 @@ export default function UnitFormModal({ buildingId, projectId, unit, onClose, on
     area_sqm: unit?.area_sqm?.toString() ?? '',
     price: unit?.price?.toString() ?? '',
     sak_id: unit?.sak_id ?? '',
+    unit_type: unit?.unit_type ?? '',
     electricity_meter_id: unit?.electricity_meter_id ?? '',
     water_meter_id: unit?.water_meter_id ?? '',
   })
@@ -51,6 +53,7 @@ export default function UnitFormModal({ buildingId, projectId, unit, onClose, on
         area_sqm: parseFloat(form.area_sqm),
         price: parseFloat(form.price),
         sak_id: form.sak_id,
+        unit_type: form.unit_type || null,
         electricity_meter_id: form.electricity_meter_id || null,
         water_meter_id: form.water_meter_id || null,
         ...(!unit && { building_id: buildingId, project_id: projectId }),
@@ -93,9 +96,18 @@ export default function UnitFormModal({ buildingId, projectId, unit, onClose, on
             <label className="label">السعر ر.س *</label>
             <input className="input" type="number" step="0.01" min="0.01" value={form.price} onChange={e => set('price', e.target.value)} required />
           </div>
-          <div className="col-span-2">
+          <div>
             <label className="label">رقم الصك (SAK) *</label>
             <input className="input" value={form.sak_id} onChange={e => set('sak_id', e.target.value)} required />
+          </div>
+          <div>
+            <label className="label">نوع الوحدة</label>
+            <select className="input" value={form.unit_type} onChange={e => set('unit_type', e.target.value)}>
+              <option value="">—</option>
+              <option value="facade">واجهة</option>
+              <option value="interior">داخلية</option>
+              <option value="dual_facade">واجهتين</option>
+            </select>
           </div>
           <div>
             <label className="label">عداد الكهرباء</label>

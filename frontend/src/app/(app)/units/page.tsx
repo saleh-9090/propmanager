@@ -12,9 +12,16 @@ type Unit = {
   area_sqm: number
   price: number
   sak_id: string
+  unit_type: string | null
   status: 'available' | 'reserved' | 'sold'
   building_id: string
   project_id: string
+}
+
+const UNIT_TYPE_LABELS: Record<string, string> = {
+  facade: 'واجهة',
+  interior: 'داخلية',
+  dual_facade: 'واجهتين',
 }
 
 type Building = {
@@ -98,7 +105,7 @@ export default function UnitsPage() {
   }
 
   return (
-    <div className="max-w-6xl">
+    <div>
       <h1 className="text-2xl font-bold text-text-primary mb-6">لوحة الوحدات</h1>
 
       {/* Filter bar */}
@@ -172,7 +179,7 @@ export default function UnitsPage() {
                 </span>
               </div>
               <div className="text-sm text-text-secondary space-y-0.5">
-                <div>ط {u.floor}</div>
+                <div>ط {u.floor}{u.unit_type ? ` · ${UNIT_TYPE_LABELS[u.unit_type] ?? u.unit_type}` : ''}</div>
                 <div>{u.area_sqm.toLocaleString('ar-SA')} م²</div>
                 <div>{u.price.toLocaleString('ar-SA')} ر.س</div>
               </div>
