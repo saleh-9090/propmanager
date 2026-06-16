@@ -308,6 +308,14 @@ Two fixed-template documents — company layout and legal clauses are pre-writte
 
 ---
 
+## Future Architecture (Parked — Path B)
+
+> **ERPNext migration plan:** `docs/erpnext-migration-plan.md`
+>
+> Current PropManager is the focused real-estate SaaS. When a paying customer asks for accounting / ZATCA / payroll, migrate to **headless ERPNext** (Pattern B): keep current Next.js frontend, swap Supabase → Frappe REST API. Same backend then serves web + future mobile app + bots. Do NOT pre-emptively rewrite — trigger is a paying customer request, not before.
+
+---
+
 ## Known Gaps & Future Phases
 
 | Gap | Impact | When to address |
